@@ -1,0 +1,9 @@
+# Block direct access to dotfiles (.user.ini, .htaccess itself, etc.)
+<FilesMatch "^\.">
+    Require all denied
+</FilesMatch>
+
+# Never execute PHP from inside the uploads-serving folder beyond serve.php itself.
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+</IfModule>
