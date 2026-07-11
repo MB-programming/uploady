@@ -55,4 +55,60 @@ class Http
             'json' => json_decode($body, true),
         ];
     }
+
+    /** Streams a local file as the body of a PUT request (used for resumable video uploads). */
+    public static function putFile(string $url, string $filePath, array $headers = [], ?int $rangeStart = null, ?int $rangeLength = null): array
+    {
+        $handle = fopen($filePath, 'rb');
+        if ($handle === false) {
+            throw new RuntimeException("Cannot open $filePath for upload");
+        }
+        if ($rangeStart !== null) {
+            fseek($handle, $rangeStart);
+        }
+        $length = $rangeLength ?? (filesize($filePath) - (int) $rangeStart);
+
+        $headerLines = [];
+        foreach ($headers as $key => $value) {
+            $headerLines[] = "$key: $value";
+        }
+
+        $ch = curl_init();
+        curl_setopt_array($ch, [
+            CURLOPT_URL => $url,
+            CURLOPT_PUT => true,
+            CURLOPT_INFILE => $handle,
+            CURLOPT_INFILESIZE => $length,
+            CURLOPT_HTTPHEADER => $headerLines,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_TIMEOUT => 280,
+            CURLOPT_SSL_VERIFYPEER => true,
+        ]);
+
+        $responseHeaders = [];
+        curl_setopt($ch, CURLOPT_HEADERFUNCTION, function ($curl, $header) use (&$responseHeaders) {
+            $parts = explode(':', $header, 2);
+            if (count($parts) === 2) {
+                $responseHeaders[strtolower(trim($parts[0]))] = trim($parts[1]);
+            }
+            return strlen($header);
+        });
+
+        $body = curl_exec($ch);
+        $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $error = curl_error($ch);
+        curl_close($ch);
+        fclose($handle);
+
+        if ($body === false) {
+            throw new RuntimeException("Upload PUT to $url failed: $error");
+        }
+
+        return [
+            'status' => $status,
+            'body' => $body,
+            'headers' => $responseHeaders,
+            'json' => json_decode($body, true),
+        ];
+    }
 }
