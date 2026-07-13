@@ -41,4 +41,19 @@ class Auth
             exit;
         }
     }
+
+    public static function isAdmin(): bool
+    {
+        $user = self::user();
+        return $user !== null && (bool) $user['is_admin'];
+    }
+
+    public static function requireAdmin(): void
+    {
+        self::requireLogin();
+        if (!self::isAdmin()) {
+            http_response_code(403);
+            die('Forbidden — admin access only.');
+        }
+    }
 }

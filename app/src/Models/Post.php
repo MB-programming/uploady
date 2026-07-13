@@ -11,17 +11,18 @@ class Post
         string $videoPath,
         string $originalName,
         int $sizeBytes,
-        string $scheduledAt
+        string $scheduledAt,
+        ?string $thumbnailPath = null
     ): int {
         $publicToken = bin2hex(random_bytes(24));
         $stmt = Database::get()->prepare(
             'INSERT INTO posts (user_id, title, description, tags, visibility, video_path, video_original_name,
-                video_size_bytes, public_token, status, scheduled_at)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, "scheduled", ?)'
+                video_size_bytes, thumbnail_path, public_token, status, scheduled_at)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "scheduled", ?)'
         );
         $stmt->execute([
             $userId, $title, $description, $tags, $visibility, $videoPath, $originalName,
-            $sizeBytes, $publicToken, $scheduledAt,
+            $sizeBytes, $thumbnailPath, $publicToken, $scheduledAt,
         ]);
         return (int) Database::get()->lastInsertId();
     }
@@ -88,6 +89,13 @@ class Post
         return (int) $stmt->fetch()['total'];
     }
 
+    public static function countForUser(int $userId): int
+    {
+        $stmt = Database::get()->prepare('SELECT COUNT(*) AS c FROM posts WHERE user_id = ?');
+        $stmt->execute([$userId]);
+        return (int) $stmt->fetch()['c'];
+    }
+
     public static function findForUser(int $id, int $userId): ?array
     {
         $stmt = Database::get()->prepare('SELECT * FROM posts WHERE id = ? AND user_id = ? LIMIT 1');
@@ -109,6 +117,9 @@ class Post
         }
         if ($post['video_path'] && is_file($post['video_path'])) {
             @unlink($post['video_path']);
+        }
+        if ($post['thumbnail_path'] && is_file($post['thumbnail_path'])) {
+            @unlink($post['thumbnail_path']);
         }
         $stmt = Database::get()->prepare('DELETE FROM posts WHERE id = ? AND user_id = ?');
         $stmt->execute([$id, $userId]);

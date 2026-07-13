@@ -54,7 +54,33 @@ class YouTubeService
         }
 
         $videoId = $uploadResponse['json']['id'];
+
+        if (!empty($post['thumbnail_path']) && is_file($post['thumbnail_path'])) {
+            self::trySetThumbnail($accessToken, $videoId, $post['thumbnail_path']);
+        }
+
         PostTarget::markPublished($target['id'], $videoId, "https://youtu.be/$videoId");
+    }
+
+    /**
+     * Custom thumbnails require the channel to be phone-verified; a channel that isn't just
+     * gets a 403 from this endpoint. That's not worth failing an otherwise-successful upload
+     * over, so this is best-effort and only logged if it doesn't work.
+     */
+    private static function trySetThumbnail(string $accessToken, string $videoId, string $thumbnailPath): void
+    {
+        try {
+            $mime = (new finfo(FILEINFO_MIME_TYPE))->file($thumbnailPath) ?: 'image/jpeg';
+            $response = Http::request('POST', "https://www.googleapis.com/upload/youtube/v3/thumbnails/set?videoId=$videoId&uploadType=media", [
+                'headers' => ['Authorization' => "Bearer $accessToken", 'Content-Type' => $mime],
+                'body' => file_get_contents($thumbnailPath),
+            ]);
+            if ($response['status'] >= 300) {
+                error_log("[YouTubeService] thumbnail set failed for $videoId: " . $response['body']);
+            }
+        } catch (Throwable $e) {
+            error_log("[YouTubeService] thumbnail set exception for $videoId: " . $e->getMessage());
+        }
     }
 
     private static function ensureFreshToken(array $account): string

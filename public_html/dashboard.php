@@ -61,8 +61,11 @@ require __DIR__ . '/partials_header.php';
 
 <?php foreach ($posts as $post): ?>
     <div class="card">
-        <div style="display:flex;justify-content:space-between;align-items:start;">
-            <div>
+        <div style="display:flex;justify-content:space-between;align-items:start;gap:14px;">
+            <?php if ($post['thumbnail_path']): ?>
+                <img src="media/thumbnail.php?post_id=<?= (int) $post['id'] ?>" alt="" style="width:96px;height:54px;object-fit:cover;border-radius:6px;flex-shrink:0;">
+            <?php endif; ?>
+            <div style="flex:1;">
                 <h2 style="font-size:17px;margin-bottom:4px;"><?= htmlspecialchars($post['title']) ?></h2>
                 <p class="muted">
                     <?= $post['status'] === 'scheduled' && strtotime($post['scheduled_at']) > time()

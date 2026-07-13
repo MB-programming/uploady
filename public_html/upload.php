@@ -67,6 +67,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
+    $thumbnailTmpPath = null;
+    $thumbnailExt = null;
+    if (!empty($_FILES['thumbnail']['name'])) {
+        if ($_FILES['thumbnail']['error'] !== UPLOAD_ERR_OK) {
+            $errors[] = 'حصل خطأ أثناء رفع الصورة المصغرة.';
+        } else {
+            $thumbnailExt = strtolower(pathinfo($_FILES['thumbnail']['name'], PATHINFO_EXTENSION));
+            $allowedThumbExt = ['jpg', 'jpeg', 'png'];
+            $allowedThumbMimes = ['image/jpeg', 'image/png'];
+            $thumbMime = (new finfo(FILEINFO_MIME_TYPE))->file($_FILES['thumbnail']['tmp_name']);
+
+            if (!in_array($thumbnailExt, $allowedThumbExt, true) || !in_array($thumbMime, $allowedThumbMimes, true)) {
+                $errors[] = 'الصورة المصغرة لازم تكون jpg أو png فعليًا';
+            } elseif ($_FILES['thumbnail']['size'] > 5 * 1024 * 1024) {
+                $errors[] = 'الصورة المصغرة أكبر من 5MB';
+            } else {
+                $thumbnailTmpPath = $_FILES['thumbnail']['tmp_name'];
+            }
+        }
+    }
+
     if (!$errors) {
         $userDir = App::storagePath('uploads/' . Auth::id());
         if (!is_dir($userDir)) {
@@ -78,6 +99,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (!move_uploaded_file($tmpPath, $destination)) {
             $errors[] = 'تعذر حفظ الفيديو على السيرفر';
         } else {
+            $thumbnailDestination = null;
+            if ($thumbnailTmpPath) {
+                $thumbCandidate = $userDir . '/' . bin2hex(random_bytes(16)) . '.' . $thumbnailExt;
+                if (move_uploaded_file($thumbnailTmpPath, $thumbCandidate)) {
+                    $thumbnailDestination = $thumbCandidate;
+                }
+            }
+
             $postId = Post::create(
                 Auth::id(),
                 $title,
@@ -87,7 +116,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $destination,
                 $_FILES['video']['name'],
                 filesize($destination),
-                $scheduledAt
+                $scheduledAt,
+                $thumbnailDestination
             );
 
             $targets = [];
@@ -140,6 +170,11 @@ require __DIR__ . '/partials_header.php';
 
     <label>الهاشتاجات / الكلمات المفتاحية (افصل بفاصلة)</label>
     <input type="text" name="tags" placeholder="tag1, tag2, tag3" value="<?= htmlspecialchars($_POST['tags'] ?? '') ?>">
+
+    <label>الصورة المصغرة (Thumbnail) — اختياري، jpg أو png</label>
+    <input type="file" name="thumbnail" accept="image/jpeg,image/png">
+    <p class="muted">بتتحط على يوتيوب تلقائي. تيك توك وانستجرام مش بيدوا إمكانية رفع صورة مصغرة
+    مخصصة عن طريق الـ API — بيختاروا لقطة من داخل الفيديو نفسه بدل كده.</p>
 
     <label>الخصوصية (يوتيوب فقط - المنصات التانية بتتنشر عام)</label>
     <select name="visibility">

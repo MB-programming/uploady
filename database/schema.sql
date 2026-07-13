@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS users (
     name VARCHAR(120) NOT NULL,
     email VARCHAR(190) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
+    is_admin TINYINT(1) NOT NULL DEFAULT 0,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -37,6 +38,7 @@ CREATE TABLE IF NOT EXISTS posts (
     video_path VARCHAR(255) NULL, -- absolute path in storage/uploads, cleared once deleted
     video_original_name VARCHAR(255) NULL,
     video_size_bytes BIGINT UNSIGNED NULL,
+    thumbnail_path VARCHAR(255) NULL, -- custom cover image; only pushed to platforms that support it (YouTube)
     public_token VARCHAR(64) NOT NULL, -- used by media/serve.php while a target still needs a fetchable URL (Instagram)
     status ENUM('scheduled','processing','published','partially_published','failed') NOT NULL DEFAULT 'scheduled',
     scheduled_at DATETIME NOT NULL, -- publish-now posts get scheduled_at = NOW() at creation time

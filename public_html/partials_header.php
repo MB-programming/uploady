@@ -17,6 +17,9 @@
             <a href="dashboard.php">لوحة التحكم</a>
             <a href="upload.php">رفع فيديو جديد</a>
             <a href="accounts.php">حسابات التواصل</a>
+            <?php if (Auth::isAdmin()): ?>
+                <a href="admin.php">لوحة الأدمن</a>
+            <?php endif; ?>
             <a href="logout.php">تسجيل خروج</a>
         <?php else: ?>
             <a href="login.php">تسجيل دخول</a>

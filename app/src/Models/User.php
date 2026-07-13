@@ -26,4 +26,13 @@ class User
         $stmt->execute([$name, $email, password_hash($password, PASSWORD_DEFAULT)]);
         return (int) Database::get()->lastInsertId();
     }
+
+    /** All clients, for the admin dashboard — excludes other admins from the "clients" view. */
+    public static function allClients(): array
+    {
+        $stmt = Database::get()->query(
+            'SELECT * FROM users WHERE is_admin = 0 ORDER BY created_at DESC'
+        );
+        return $stmt->fetchAll();
+    }
 }
