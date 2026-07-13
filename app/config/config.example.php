@@ -21,6 +21,14 @@ return [
     // OR set at CLI via env var CRON_SECRET when Hostinger allows `php cron/publish.php`.
     'cron_secret' => 'REPLACE-WITH-RANDOM-STRING',
 
+    // Per-client storage cap. Only videos still sitting on disk count against it — once a
+    // post finishes publishing (or fails for good) auto-delete frees the file and the quota.
+    'storage_quota_gb' => 10,
+
+    // Failed login attempts (per email) allowed within login_lockout_minutes before a temporary lock.
+    'login_max_attempts' => 5,
+    'login_lockout_minutes' => 15,
+
     'youtube' => [
         // Google Cloud Console -> APIs & Services -> Credentials (OAuth Client, Web application)
         // Enable "YouTube Data API v3". Add {app_url}/oauth/youtube_callback.php as redirect URI.

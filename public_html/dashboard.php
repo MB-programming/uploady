@@ -24,6 +24,10 @@ $platformNames = [
     'instagram' => 'انستجرام',
 ];
 
+$usedGb = Post::storageUsedBytes(Auth::id()) / 1024 ** 3;
+$quotaGb = App::config('storage_quota_gb');
+$pct = min(100, $quotaGb > 0 ? ($usedGb / $quotaGb) * 100 : 0);
+
 $pageTitle = 'لوحة التحكم';
 require __DIR__ . '/partials_header.php';
 ?>
@@ -32,6 +36,22 @@ require __DIR__ . '/partials_header.php';
 <?php if (!empty($_GET['created'])): ?>
     <div class="alert success">تم حفظ الفيديو وهيتم نشره حسب الميعاد المحدد.</div>
 <?php endif; ?>
+<?php if (!empty($_GET['cancelled'])): ?>
+    <div class="alert success">تم إلغاء الفيديو وحذفه من السيرفر.</div>
+<?php endif; ?>
+<?php if (!empty($_GET['rescheduled'])): ?>
+    <div class="alert success">تم تعديل ميعاد النشر.</div>
+<?php endif; ?>
+<?php if (!empty($_GET['error'])): ?>
+    <div class="alert error">تعذر تنفيذ العملية — ممكن يكون النشر بدأ بالفعل.</div>
+<?php endif; ?>
+
+<div class="card" style="padding:14px 20px;">
+    <div class="muted">مساحة التخزين المستخدمة: <?= number_format($usedGb, 2) ?> GB من <?= (int) $quotaGb ?> GB</div>
+    <div style="background:#0d0f14;border-radius:6px;height:8px;margin-top:8px;overflow:hidden;">
+        <div style="background:<?= $pct > 90 ? 'var(--err)' : 'var(--accent)' ?>;height:100%;width:<?= round($pct, 1) ?>%;"></div>
+    </div>
+</div>
 
 <p><a class="btn" href="upload.php">+ رفع فيديو جديد</a></p>
 
@@ -55,6 +75,26 @@ require __DIR__ . '/partials_header.php';
                 <?= htmlspecialchars($statusLabels[$post['status']] ?? $post['status']) ?>
             </span>
         </div>
+
+        <?php $stillCancellable = $post['status'] === 'scheduled' && strtotime($post['scheduled_at']) > time(); ?>
+        <?php if ($stillCancellable): ?>
+            <div style="display:flex;gap:10px;align-items:center;margin:10px 0;flex-wrap:wrap;">
+                <form method="post" action="post_action.php" style="display:flex;gap:6px;align-items:center;">
+                    <?= Csrf::field() ?>
+                    <input type="hidden" name="action" value="reschedule">
+                    <input type="hidden" name="post_id" value="<?= (int) $post['id'] ?>">
+                    <input type="datetime-local" name="scheduled_at" required style="width:auto;">
+                    <button type="submit" class="btn secondary" style="padding:6px 12px;font-size:13px;">تعديل الميعاد</button>
+                </form>
+                <form method="post" action="post_action.php" data-confirm="إلغاء الفيديو وحذفه من السيرفر؟">
+                    <?= Csrf::field() ?>
+                    <input type="hidden" name="action" value="cancel">
+                    <input type="hidden" name="post_id" value="<?= (int) $post['id'] ?>">
+                    <button type="submit" class="btn danger" style="padding:6px 12px;font-size:13px;">إلغاء</button>
+                </form>
+            </div>
+        <?php endif; ?>
+
         <table>
             <thead><tr><th>المنصة</th><th>الحالة</th><th>رابط</th></tr></thead>
             <tbody>

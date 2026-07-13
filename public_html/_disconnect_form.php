@@ -1,5 +1,5 @@
 <?php /** @var array $acc expected in scope from includer */ ?>
-<form method="post" onsubmit="return confirm('فصل الحساب؟');" style="display:inline;">
+<form method="post" data-confirm="فصل الحساب؟" style="display:inline;">
     <?= Csrf::field() ?>
     <input type="hidden" name="action" value="disconnect">
     <input type="hidden" name="id" value="<?= (int) $acc['id'] ?>">

@@ -5,6 +5,9 @@ Auth::requireLogin();
 $accounts = SocialAccount::forUser(Auth::id());
 $errors = [];
 
+$quotaBytes = (float) App::config('storage_quota_gb') * 1024 ** 3;
+$usedBytes = Post::storageUsedBytes(Auth::id());
+
 // YouTube Shorts is not a separate API — it's just a normal YouTube upload that qualifies as a
 // Short (vertical, <=60s), so we expose it as a checkbox variant of the same YouTube account.
 $platformLabels = [
@@ -47,8 +50,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         $ext = strtolower(pathinfo($_FILES['video']['name'], PATHINFO_EXTENSION));
         $allowedExt = ['mp4', 'mov', 'm4v'];
-        if (!in_array($ext, $allowedExt, true)) {
-            $errors[] = 'صيغة الفيديو لازم تكون mp4 أو mov';
+        $allowedMimes = ['video/mp4', 'video/quicktime', 'video/x-m4v'];
+        $actualMime = (new finfo(FILEINFO_MIME_TYPE))->file($_FILES['video']['tmp_name']);
+
+        if (!in_array($ext, $allowedExt, true) || !in_array($actualMime, $allowedMimes, true)) {
+            $errors[] = 'صيغة الفيديو لازم تكون mp4 أو mov فعليًا (مش بس الامتداد)';
+        } elseif ($usedBytes + $_FILES['video']['size'] > $quotaBytes) {
+            $remainingGb = max(0, ($quotaBytes - $usedBytes) / 1024 ** 3);
+            $errors[] = sprintf(
+                'مساحة التخزين هتخلص — متبقي %.2f GB بس من أصل %d GB. الفيديوهات المنشورة بتتحذف تلقائي وتفضي مساحة، أو استنى لحد ما فيديو تاني ينشر.',
+                $remainingGb,
+                App::config('storage_quota_gb')
+            );
         } else {
             $tmpPath = $_FILES['video']['tmp_name'];
         }
@@ -96,6 +109,14 @@ $pageTitle = 'رفع فيديو جديد';
 require __DIR__ . '/partials_header.php';
 ?>
 <h1>رفع فيديو جديد</h1>
+
+<?php $usedGb = $usedBytes / 1024 ** 3; $quotaGb = App::config('storage_quota_gb'); $pct = min(100, $quotaGb > 0 ? ($usedGb / $quotaGb) * 100 : 0); ?>
+<div class="card" style="padding:14px 20px;">
+    <div class="muted">مساحة التخزين المستخدمة: <?= number_format($usedGb, 2) ?> GB من <?= (int) $quotaGb ?> GB</div>
+    <div style="background:#0d0f14;border-radius:6px;height:8px;margin-top:8px;overflow:hidden;">
+        <div style="background:<?= $pct > 90 ? 'var(--err)' : 'var(--accent)' ?>;height:100%;width:<?= round($pct, 1) ?>%;"></div>
+    </div>
+</div>
 
 <?php if ($accounts === []): ?>
     <div class="alert error">لازم تربط حساب تواصل اجتماعي واحد على الأقل الأول. <a href="accounts.php">اربط حساب</a></div>
@@ -147,10 +168,10 @@ require __DIR__ . '/partials_header.php';
 
     <label>النشر</label>
     <label style="display:inline-flex;align-items:center;gap:6px;font-weight:normal;">
-        <input type="radio" name="publish_mode" value="now" checked onclick="document.getElementById('scheduleField').style.display='none'"> نشر الآن
+        <input type="radio" name="publish_mode" value="now" checked> نشر الآن
     </label>
     <label style="display:inline-flex;align-items:center;gap:6px;font-weight:normal;">
-        <input type="radio" name="publish_mode" value="schedule" onclick="document.getElementById('scheduleField').style.display='block'"> جدولة لوقت لاحق
+        <input type="radio" name="publish_mode" value="schedule"> جدولة لوقت لاحق
     </label>
     <div id="scheduleField" style="display:none;">
         <input type="datetime-local" name="scheduled_at" value="<?= htmlspecialchars($_POST['scheduled_at'] ?? '') ?>">
@@ -159,4 +180,5 @@ require __DIR__ . '/partials_header.php';
     <p><button class="btn" type="submit" style="margin-top:20px;">نشر / جدولة</button></p>
 </form>
 
+<script src="assets/js/upload.js"></script>
 <?php require __DIR__ . '/partials_footer.php'; ?>
