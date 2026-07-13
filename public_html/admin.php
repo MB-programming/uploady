@@ -70,7 +70,11 @@ require __DIR__ . '/partials_header.php';
                 </td>
                 <td><?= $row['videos_total'] ?></td>
                 <td><?= number_format($row['used_gb'], 2) ?> / <?= (int) $quotaGb ?> GB</td>
-                <td><a href="admin_client.php?id=<?= (int) $row['client']['id'] ?>">التفاصيل</a></td>
+                <td>
+                    <a href="admin_client.php?id=<?= (int) $row['client']['id'] ?>">التفاصيل</a>
+                    ·
+                    <a href="admin_user_form.php?id=<?= (int) $row['client']['id'] ?>">تعديل</a>
+                </td>
             </tr>
         <?php endforeach; ?>
     </tbody>

@@ -13,12 +13,15 @@
 <div class="nav">
     <a href="<?= Auth::check() ? 'dashboard.php' : 'index.php' ?>"><strong>Uploady</strong></a>
     <div>
+        <a href="pricing.php">الأسعار</a>
         <?php if (Auth::check()): ?>
             <a href="dashboard.php">لوحة التحكم</a>
             <a href="upload.php">رفع فيديو جديد</a>
             <a href="accounts.php">حسابات التواصل</a>
+            <a href="profile.php">حسابي</a>
             <?php if (Auth::isAdmin()): ?>
                 <a href="admin.php">لوحة الأدمن</a>
+                <a href="admin_users.php">إدارة المستخدمين</a>
             <?php endif; ?>
             <a href="logout.php">تسجيل خروج</a>
         <?php else: ?>
