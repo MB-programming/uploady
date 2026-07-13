@@ -13,6 +13,8 @@ $errors = [];
 $name = $editingUser['name'] ?? '';
 $email = $editingUser['email'] ?? '';
 $isAdmin = (bool) ($editingUser['is_admin'] ?? false);
+$planId = $editingUser['plan_id'] ?? null;
+$plans = Plan::all();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     Csrf::verify();
@@ -21,6 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = trim((string) ($_POST['email'] ?? ''));
     $password = (string) ($_POST['password'] ?? '');
     $isAdmin = !empty($_POST['is_admin']);
+    $planId = $_POST['plan_id'] !== '' ? (int) $_POST['plan_id'] : null;
 
     if ($name === '') $errors[] = 'الاسم مطلوب';
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) $errors[] = 'البريد الإلكتروني غير صحيح';
@@ -41,12 +44,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!$errors) {
         if ($editingUser) {
             User::updateProfile((int) $editingUser['id'], $name, $email, $isAdmin);
+            User::updatePlan((int) $editingUser['id'], $planId);
             if ($password !== '') {
                 User::updatePassword((int) $editingUser['id'], $password);
             }
             header('Location: admin_users.php?updated=1');
         } else {
-            User::createByAdmin($name, $email, $password, $isAdmin);
+            $newId = User::createByAdmin($name, $email, $password, $isAdmin);
+            User::updatePlan($newId, $planId);
             header('Location: admin_users.php?created=1');
         }
         exit;
@@ -74,6 +79,16 @@ require __DIR__ . '/partials_header.php';
 
     <label><?= $editingUser ? 'كلمة مرور جديدة (سيبها فاضية عشان تسيب الحالية زي ما هي)' : 'كلمة المرور' ?></label>
     <input type="password" name="password" <?= $editingUser ? '' : 'required' ?>>
+
+    <label>الخطة</label>
+    <select name="plan_id">
+        <option value="">بدون خطة</option>
+        <?php foreach ($plans as $planOption): ?>
+            <option value="<?= (int) $planOption['id'] ?>" <?= (int) $planId === (int) $planOption['id'] ? 'selected' : '' ?>>
+                <?= htmlspecialchars($planOption['name']) ?> — <?= number_format((float) $planOption['price_egp'], 0) ?> ج.م (<?= $planOption['storage_quota_gb'] ?> GB)
+            </option>
+        <?php endforeach; ?>
+    </select>
 
     <?php $isSelf = $editingUser && (int) $editingUser['id'] === Auth::id(); ?>
     <label style="display:flex;align-items:center;gap:8px;font-weight:normal;margin-top:16px;">

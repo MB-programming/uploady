@@ -3,7 +3,6 @@ require __DIR__ . '/../app/bootstrap.php';
 Auth::requireAdmin();
 
 $clients = User::allClients();
-$quotaGb = App::config('storage_quota_gb');
 
 $platformNames = [
     'youtube' => 'يوتيوب',
@@ -18,20 +17,43 @@ foreach ($clients as $client) {
     foreach ($accounts as $account) {
         $platformCounts[$account['platform']]++;
     }
+    $plan = $client['plan_id'] ? Plan::find((int) $client['plan_id']) : null;
     $rows[] = [
         'client' => $client,
+        'plan_name' => $plan['name'] ?? null,
         'accounts_total' => count($accounts),
         'platform_counts' => $platformCounts,
         'videos_total' => Post::countForUser((int) $client['id']),
         'used_gb' => Post::storageUsedBytes((int) $client['id']) / 1024 ** 3,
+        'quota_gb' => Plan::quotaGbForUser($client),
     ];
 }
 
 $pageTitle = 'لوحة تحكم الأدمن';
 require __DIR__ . '/partials_header.php';
 ?>
-<h1>العملاء</h1>
-<p class="muted">إجمالي العملاء: <?= count($rows) ?></p>
+<h1>لوحة تحكم الأدمن</h1>
+
+<div class="platform-list">
+    <div class="platform-card">
+        <div class="muted">إجمالي العملاء</div>
+        <div style="font-size:22px;font-weight:700;"><?= count($rows) ?></div>
+    </div>
+    <div class="platform-card">
+        <div class="muted">إجمالي الفيديوهات المرفوعة</div>
+        <div style="font-size:22px;font-weight:700;"><?= Post::countAll() ?></div>
+    </div>
+    <div class="platform-card">
+        <div class="muted">إجمالي المدفوع</div>
+        <div style="font-size:22px;font-weight:700;color:var(--ok);"><?= number_format(Invoice::totalPaidAmount(), 0) ?> ج.م</div>
+    </div>
+    <div class="platform-card">
+        <div class="muted">إجمالي غير المدفوع</div>
+        <div style="font-size:22px;font-weight:700;color:var(--warn);"><?= number_format(Invoice::totalUnpaidAmount(), 0) ?> ج.م</div>
+    </div>
+</div>
+
+<h2 style="font-size:16px;">العملاء</h2>
 
 <div class="card">
 <div style="overflow-x:auto;">
@@ -39,6 +61,7 @@ require __DIR__ . '/partials_header.php';
     <thead>
         <tr>
             <th>العميل</th>
+            <th>الخطة</th>
             <th>تاريخ التسجيل</th>
             <th>الحسابات المتصلة</th>
             <th>عدد الفيديوهات</th>
@@ -56,6 +79,7 @@ require __DIR__ . '/partials_header.php';
                     <div><?= htmlspecialchars($row['client']['name']) ?></div>
                     <div class="muted"><?= htmlspecialchars($row['client']['email']) ?></div>
                 </td>
+                <td><?= $row['plan_name'] ? htmlspecialchars($row['plan_name']) : '<span class="muted">بدون خطة</span>' ?></td>
                 <td><?= htmlspecialchars($row['client']['created_at']) ?></td>
                 <td>
                     <?php if ($row['accounts_total'] === 0): ?>
@@ -69,7 +93,7 @@ require __DIR__ . '/partials_header.php';
                     <?php endif; ?>
                 </td>
                 <td><?= $row['videos_total'] ?></td>
-                <td><?= number_format($row['used_gb'], 2) ?> / <?= (int) $quotaGb ?> GB</td>
+                <td><?= number_format($row['used_gb'], 2) ?> / <?= (int) $row['quota_gb'] ?> GB</td>
                 <td>
                     <a href="admin_client.php?id=<?= (int) $row['client']['id'] ?>">التفاصيل</a>
                     ·

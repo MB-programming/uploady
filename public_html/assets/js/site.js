@@ -5,3 +5,9 @@ document.querySelectorAll('form[data-confirm]').forEach(function (form) {
         }
     });
 });
+
+document.querySelectorAll('.js-print').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+        window.print();
+    });
+});

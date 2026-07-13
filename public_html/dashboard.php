@@ -25,7 +25,7 @@ $platformNames = [
 ];
 
 $usedGb = Post::storageUsedBytes(Auth::id()) / 1024 ** 3;
-$quotaGb = App::config('storage_quota_gb');
+$quotaGb = Plan::quotaGbForUser(Auth::user());
 $pct = min(100, $quotaGb > 0 ? ($usedGb / $quotaGb) * 100 : 0);
 
 $pageTitle = 'لوحة التحكم';

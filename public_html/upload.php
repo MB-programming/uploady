@@ -5,7 +5,8 @@ Auth::requireLogin();
 $accounts = SocialAccount::forUser(Auth::id());
 $errors = [];
 
-$quotaBytes = (float) App::config('storage_quota_gb') * 1024 ** 3;
+$quotaGb = Plan::quotaGbForUser(Auth::user());
+$quotaBytes = $quotaGb * 1024 ** 3;
 $usedBytes = Post::storageUsedBytes(Auth::id());
 
 // YouTube Shorts is not a separate API — it's just a normal YouTube upload that qualifies as a
@@ -60,7 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $errors[] = sprintf(
                 'مساحة التخزين هتخلص — متبقي %.2f GB بس من أصل %d GB. الفيديوهات المنشورة بتتحذف تلقائي وتفضي مساحة، أو استنى لحد ما فيديو تاني ينشر.',
                 $remainingGb,
-                App::config('storage_quota_gb')
+                $quotaGb
             );
         } else {
             $tmpPath = $_FILES['video']['tmp_name'];
@@ -140,7 +141,7 @@ require __DIR__ . '/partials_header.php';
 ?>
 <h1>رفع فيديو جديد</h1>
 
-<?php $usedGb = $usedBytes / 1024 ** 3; $quotaGb = App::config('storage_quota_gb'); $pct = min(100, $quotaGb > 0 ? ($usedGb / $quotaGb) * 100 : 0); ?>
+<?php $usedGb = $usedBytes / 1024 ** 3; $pct = min(100, $quotaGb > 0 ? ($usedGb / $quotaGb) * 100 : 0); ?>
 <div class="card" style="padding:14px 20px;">
     <div class="muted">مساحة التخزين المستخدمة: <?= number_format($usedGb, 2) ?> GB من <?= (int) $quotaGb ?> GB</div>
     <div style="background:#0d0f14;border-radius:6px;height:8px;margin-top:8px;overflow:hidden;">

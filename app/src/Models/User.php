@@ -77,6 +77,12 @@ class User
         $stmt->execute([password_hash($password, PASSWORD_DEFAULT), $id]);
     }
 
+    public static function updatePlan(int $id, ?int $planId): void
+    {
+        $stmt = Database::get()->prepare('UPDATE users SET plan_id = ? WHERE id = ?');
+        $stmt->execute([$planId, $id]);
+    }
+
     /**
      * Deletes an account and everything tied to it: video/thumbnail files still on disk,
      * their storage folder, and the DB row (social_accounts/posts/post_targets cascade via FK).

@@ -1,13 +1,27 @@
 -- Uploady schema (MySQL 5.7+/MariaDB 10.3+, compatible with Hostinger shared hosting)
 SET NAMES utf8mb4;
 
+-- Subscription tiers shown on pricing.php. Seeded below; edit rows directly via phpMyAdmin
+-- if you need to change prices/quotas later (there's no admin UI for editing plans yet).
+CREATE TABLE IF NOT EXISTS plans (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL UNIQUE,
+    price_egp DECIMAL(10,2) NOT NULL,
+    storage_quota_gb INT UNSIGNED NOT NULL,
+    max_social_accounts INT UNSIGNED NULL, -- NULL = unlimited; informational only, not enforced yet
+    sort_order TINYINT UNSIGNED NOT NULL DEFAULT 0,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 CREATE TABLE IF NOT EXISTS users (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(120) NOT NULL,
     email VARCHAR(190) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
     is_admin TINYINT(1) NOT NULL DEFAULT 0,
-    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+    plan_id INT UNSIGNED NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_users_plan FOREIGN KEY (plan_id) REFERENCES plans(id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- One row per connected social channel (a user can connect several YouTube channels, etc.)
@@ -88,3 +102,27 @@ CREATE TABLE IF NOT EXISTS oauth_states (
     code_verifier VARCHAR(190) NULL, -- PKCE, used by TikTok
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Manually-managed billing records — there's no payment gateway wired up, so an admin creates
+-- these and marks them paid/unpaid by hand (e.g. after a bank transfer or cash payment).
+CREATE TABLE IF NOT EXISTS invoices (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    user_id INT UNSIGNED NOT NULL,
+    plan_id INT UNSIGNED NULL,
+    amount_egp DECIMAL(10,2) NOT NULL,
+    period_start DATE NOT NULL,
+    period_end DATE NOT NULL,
+    status ENUM('unpaid','paid','cancelled') NOT NULL DEFAULT 'unpaid',
+    notes VARCHAR(500) NULL,
+    paid_at DATETIME NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    KEY idx_invoices_user (user_id),
+    CONSTRAINT fk_invoices_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT fk_invoices_plan FOREIGN KEY (plan_id) REFERENCES plans(id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+INSERT INTO plans (name, price_egp, storage_quota_gb, max_social_accounts, sort_order) VALUES
+    ('الأساسية', 299.00, 10, 3, 1),
+    ('الاحترافية', 750.00, 50, 10, 2),
+    ('الأعمال', 1500.00, 200, NULL, 3)
+ON DUPLICATE KEY UPDATE name = VALUES(name);

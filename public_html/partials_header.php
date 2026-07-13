@@ -18,10 +18,12 @@
             <a href="dashboard.php">لوحة التحكم</a>
             <a href="upload.php">رفع فيديو جديد</a>
             <a href="accounts.php">حسابات التواصل</a>
+            <a href="reports.php">التقارير</a>
             <a href="profile.php">حسابي</a>
             <?php if (Auth::isAdmin()): ?>
                 <a href="admin.php">لوحة الأدمن</a>
                 <a href="admin_users.php">إدارة المستخدمين</a>
+                <a href="admin_invoices.php">الفواتير</a>
             <?php endif; ?>
             <a href="logout.php">تسجيل خروج</a>
         <?php else: ?>

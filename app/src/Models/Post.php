@@ -96,6 +96,25 @@ class Post
         return (int) $stmt->fetch()['c'];
     }
 
+    /** Video counts by status, for the client reports dashboard. */
+    public static function statusCountsForUser(int $userId): array
+    {
+        $counts = ['scheduled' => 0, 'processing' => 0, 'published' => 0, 'partially_published' => 0, 'failed' => 0];
+        $stmt = Database::get()->prepare('SELECT status, COUNT(*) AS c FROM posts WHERE user_id = ? GROUP BY status');
+        $stmt->execute([$userId]);
+        foreach ($stmt->fetchAll() as $row) {
+            $counts[$row['status']] = (int) $row['c'];
+        }
+        return $counts;
+    }
+
+    /** Total videos uploaded across every client, for the admin aggregate reports. */
+    public static function countAll(): int
+    {
+        $stmt = Database::get()->query('SELECT COUNT(*) AS c FROM posts');
+        return (int) $stmt->fetch()['c'];
+    }
+
     public static function findForUser(int $id, int $userId): ?array
     {
         $stmt = Database::get()->prepare('SELECT * FROM posts WHERE id = ? AND user_id = ? LIMIT 1');

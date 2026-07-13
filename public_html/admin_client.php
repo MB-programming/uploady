@@ -12,7 +12,7 @@ if (!$client || $client['is_admin']) {
 
 $accounts = SocialAccount::forUser($clientId);
 $posts = Post::forUser($clientId);
-$quotaGb = App::config('storage_quota_gb');
+$quotaGb = Plan::quotaGbForUser($client);
 $usedGb = Post::storageUsedBytes($clientId) / 1024 ** 3;
 
 $statusLabels = [
