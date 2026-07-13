@@ -1,5 +1,5 @@
 <?php
-require __DIR__ . '/../app/bootstrap.php';
+require __DIR__ . '/app/bootstrap.php';
 
 if (Auth::check()) {
     header('Location: dashboard.php');

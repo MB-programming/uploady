@@ -1,5 +1,5 @@
 <?php
-require __DIR__ . '/../app/bootstrap.php';
+require __DIR__ . '/app/bootstrap.php';
 Auth::requireLogin();
 
 $posts = Post::forUser(Auth::id());

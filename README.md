@@ -12,36 +12,42 @@
 **لو انت الأدمن وعايز تعرف بالظبط إيه اللي لازم تعمله على فيسبوك/جوجل/تيك توك عشان الربط يشتغل،
 اقرأ [`ADMIN_SETUP.md`](ADMIN_SETUP.md) — فيه كل خطوة خارجية بالتفصيل.**
 
+## صفحة الهبوط (Landing Page)
+`index.php` للزوار اللي مش مسجلين دخول بقت صفحة تعريفية كاملة (مش مجرد Redirect): هيرو بخلفية
+Canvas متحركة (بكسلات بتتكشف تدريجيًا)، عنوان بتأثير Shimmer، خط تجوال (Marquee) بيعرض المنصات
+والمميزات، وأقسام "الفكرة" و"إزاي بيشتغل" بتتحرك لما تنزل بالصفحة (Scroll reveal). المستخدم اللي
+مسجل دخول بيتوجه لـ `dashboard.php` زي ما هو متوقع.
+
+الأنيميشن كله **Vanilla JS + GSAP** (لا React ولا Framer Motion — المشروع كله PHP native من غير
+أي build step، وFramer Motion مكتبة خاصة بـ React بس مينفعش تشتغل من غيره). GSAP وplugin الـ
+ScrollTrigger بتاعه متحملين محليًا في `assets/js/vendor/` (مش من CDN خارجي) عشان يفضلوا شغالين
+حتى لو الإنترنت وقع، وعشان يتوافقوا مع الـ Content-Security-Policy الصارم (`script-src 'self'`).
+
 ## هيكل المشروع
 
+كل حاجة دلوقتي جوه `public_html/` (مطابق لهيكل Hostinger — بترفع محتويات `public_html/` من
+المشروع مباشرة في `public_html/` بتاعة الدومين، من غير ما تحتاج تحط أي فولدر برة):
+
 ```
-app/            كود التطبيق (خارج الـ webroot تمامًا — مش متاح من المتصفح)
-  config/       config.example.php (نموذج) + config.local.php (أسرارك الحقيقية، متعمل .gitignore)
-  src/          Database, Auth, Crypto, Http, الموديلز، وخدمات كل منصة
-public_html/    الـ webroot الفعلي (اللي الدومين بيشاور عليه في Hostinger)
-storage/        uploads/ (الفيديوهات المؤقتة) + logs/ — خارج الـ webroot برضه
-cron/publish.php  السكريبت اللي الـ Cron Job بينفذه دوريًا
-database/schema.sql  السكيما بتاعة MySQL
+public_html/
+  app/            كود التطبيق: config/, src/ (Database, Auth, Crypto, Http, الموديلز، خدمات كل منصة)
+  storage/        uploads/ (الفيديوهات المؤقتة) + logs/
+  cron/publish.php  السكريبت اللي الـ Cron Job بينفذه دوريًا
+  database/       schema.sql + migrations/
+  *.php           صفحات الموقع (index.php, login.php, dashboard.php, ...)
+  connect/, oauth/, media/, assets/
 ```
 
-**مهم:** لازم `app/`, `storage/`, `cron/`, `database/` يكونوا **برة** مجلد `public_html`
-(يعني في نفس مستوى `public_html` جوه الـ home directory بتاعك في hPanel)، مش جواه، عشان محدش
-يقدر يفتح ملفات الأسرار أو الفيديوهات مباشرة من المتصفح.
+**`app/`, `storage/`, `cron/`, `database/` كل واحد فيهم عنده `.htaccess` بيمنع أي حد يفتحهم مباشرة
+من المتصفح** (`Require all denied`) — من غير الحماية دي، أي حد كان هيقدر يفتح `config.local.php`
+(فيه باسورد قاعدة البيانات) أو يحمّل فيديوهات العملاء مباشرة. الحماية دي معتمدة على إن Apache
+بيقرأ `.htaccess` (`AllowOverride All`) — الوضع الافتراضي على Hostinger شير هوستينج.
 
 ## خطوات النشر على Hostinger
 
 ### 1. الملفات
-ارفع المشروع بالكامل عن طريق File Manager أو FTP بحيث الشكل يبقى:
-```
-/home/USERNAME/
-  domains/your-domain.com/
-    public_html/   <- محتويات public_html/ من المشروع
-  app/
-  storage/
-  cron/
-  database/
-```
-(المسارات بالظبط بتختلف شوية حسب خطة Hostinger عندك — المهم إن `app` و`storage` و`cron` مش جوه `public_html`)
+ارفع محتويات `public_html/` من المشروع مباشرة جوه `public_html/` بتاعة الدومين على Hostinger
+(عن طريق File Manager أو FTP). مفيش أي فولدر تاني تحتاج تحطه في مكان تاني.
 
 ### 2. قاعدة البيانات
 - من hPanel: أنشئ MySQL Database + User وحطهم مع بعض.
@@ -50,8 +56,12 @@ database/schema.sql  السكيما بتاعة MySQL
   ```sql
   UPDATE users SET is_admin = 1 WHERE email = 'إيميلك هنا';
   ```
-  ده اللي بيدّيك وصول لـ `admin.php` (لوحة تحكم الأدمن). لو رفعت المشروع فوق قاعدة بيانات كانت
-  شغالة بنسخة أقدم من الكود، نفّذ `database/migrations/001_thumbnail_and_admin.sql` الأول.
+  ده اللي بيدّيك وصول لـ `admin.php` (لوحة تحكم الأدمن).
+- **مهم:** الملفات في `database/migrations/` مخصصة بس لترقية قاعدة بيانات كانت شغالة بنسخة **أقدم**
+  من الكود. لو أول مرة تنشئ القاعدة، شغّل `schema.sql` **بس** ومتشغلش أي ملف migration بعده —
+  تشغيلهم مع بعض بيسبب خطأ زي `#1005 ... Duplicate key on write or update` لأن القيد
+  (constraint) اللي الـ migration بيحاول يضيفه يكون أصلاً موجود جوه `schema.sql` الجديد. لو
+  وقعت في الخطأ ده، شغّل `database/reset.sql` (بيمسح كل الجداول) وبعدين `schema.sql` مرة واحدة بس.
 
 ### 3. الإعدادات
 - انسخ `app/config/config.example.php` إلى `app/config/config.local.php` واملأه:
@@ -82,11 +92,11 @@ hPanel → Advanced → PHP Configuration وارفع `upload_max_filesize` / `po
 
 **لو الاستضافة بتدعم تنفيذ PHP CLI مباشرة (الأفضل):**
 ```
-php /home/USERNAME/cron/publish.php
+php /home/USERNAME/domains/your-domain.com/public_html/cron/publish.php
 ```
 
-**لو بس متاح "Visit URL":** لازم تنقل `cron/publish.php` جوه `public_html` (مثلاً
-`public_html/cron-publish.php`) وتضيف فيه فحص `cron_secret` زي الموجود، وتحط في hPanel:
+**لو بس متاح "Visit URL":** استخدم `cron-publish.php` (موجود جاهز في جذر `public_html`، وهو مجرد
+غلاف صغير بينفذ `cron/publish.php` الحقيقي — مش محتاج تنقل أو تعدّل أي حاجة) وحط في hPanel:
 ```
 https://your-domain.com/cron-publish.php?secret=REPLACE-WITH-YOUR-CRON-SECRET
 ```

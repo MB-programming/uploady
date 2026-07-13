@@ -1,5 +1,5 @@
 <?php
-require __DIR__ . '/../app/bootstrap.php';
+require __DIR__ . '/app/bootstrap.php';
 Auth::requireAdmin();
 
 $clientId = (int) ($_GET['id'] ?? 0);

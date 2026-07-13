@@ -1,5 +1,5 @@
 <?php
-require __DIR__ . '/../app/bootstrap.php';
+require __DIR__ . '/app/bootstrap.php';
 Auth::requireAdmin();
 
 $editId = isset($_GET['id']) ? (int) $_GET['id'] : null;

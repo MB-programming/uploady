@@ -1,5 +1,5 @@
 <?php
-require __DIR__ . '/../app/bootstrap.php';
+require __DIR__ . '/app/bootstrap.php';
 $pageTitle = 'حذف البيانات';
 require __DIR__ . '/partials_header.php';
 ?>

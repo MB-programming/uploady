@@ -1,6 +1,6 @@
-app/config/config.local.php
-storage/uploads/*
-!storage/uploads/.gitkeep
-storage/logs/*
-!storage/logs/.gitkeep
+public_html/app/config/config.local.php
+public_html/storage/uploads/*
+!public_html/storage/uploads/.gitkeep
+public_html/storage/logs/*
+!public_html/storage/logs/.gitkeep
 .DS_Store

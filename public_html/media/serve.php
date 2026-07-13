@@ -1,5 +1,5 @@
 <?php
-require __DIR__ . '/../../app/bootstrap.php';
+require __DIR__ . '/../app/bootstrap.php';
 
 /**
  * Streams a pending post's video file so Instagram's Graph API can fetch it while building

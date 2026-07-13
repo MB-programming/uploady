@@ -1,5 +1,5 @@
 <?php
-require __DIR__ . '/../app/bootstrap.php';
+require __DIR__ . '/app/bootstrap.php';
 
 // Placeholder plans/prices — edit freely. Prices are intentionally blurred while the
 // "free for a limited time" promotion banner is up (see .price-value / .price-ribbon in style.css).
