@@ -29,6 +29,7 @@ if (Auth::check()) {
 <section class="landing-hero">
     <div class="hero-canvas-wrap" data-pixel-canvas></div>
     <div class="hero-content">
+        <span class="hero-eyebrow"><?= Icons::bolt() ?> نشر تلقائي على كل منصاتك</span>
         <h1 class="hero-title">فيديو واحد.<br>كل المنصات.</h1>
         <p class="hero-desc">
             ارفع الفيديو مرة واحدة، حط العنوان والوصف والتاجات والصورة المصغرة، اختار المنصات
@@ -36,7 +37,7 @@ if (Auth::check()) {
             وبيمسح الفيديو من السيرفر تلقائي بعد النشر عشان يوفرلك المساحة.
         </p>
         <div class="hero-ctas">
-            <a href="register.php" class="btn">ابدأ مجانًا الآن</a>
+            <a href="register.php" class="btn"><?= Icons::bolt() ?> ابدأ مجانًا الآن</a>
             <a href="pricing.php" class="btn secondary">شوف الأسعار</a>
         </div>
     </div>
@@ -53,22 +54,22 @@ if (Auth::check()) {
     <p class="section-lead">مصمم لصاحب المحتوى أو الوكالة اللي بتدير فيديوهات لعملاء متعددين — كل عميل بحسابه وقنواته الخاصة.</p>
     <div class="feature-grid">
         <div class="feature-card">
-            <div class="feature-icon">🎬</div>
+            <div class="feature-icon"><?= Icons::upload() ?></div>
             <h3>ارفع مرة واحدة</h3>
             <p>فيديو، عنوان، وصف، هاشتاجات، وصورة مصغرة — كل بيانات النشر في مكان واحد.</p>
         </div>
         <div class="feature-card">
-            <div class="feature-icon">🔗</div>
+            <div class="feature-icon"><?= Icons::link() ?></div>
             <h3>اربط قنواتك</h3>
             <p>يوتيوب (فيديو عادي أو Shorts)، تيك توك، وانستجرام Reels — بربط آمن عن طريق OAuth.</p>
         </div>
         <div class="feature-card">
-            <div class="feature-icon">⏱️</div>
+            <div class="feature-icon"><?= Icons::clock() ?></div>
             <h3>انشر أو جدول</h3>
             <p>دوس نشر وينشر فورًا، أو حدد ميعاد لاحق — وتقدر تعدّل الميعاد أو تلغي لحد ما يستحق.</p>
         </div>
         <div class="feature-card">
-            <div class="feature-icon">🗑️</div>
+            <div class="feature-icon"><?= Icons::trash() ?></div>
             <h3>حذف تلقائي للمساحة</h3>
             <p>بمجرد ما الفيديو ينشر على كل المنصات، بيتمسح من السيرفر أوتوماتيك — مساحتك محفوظة.</p>
         </div>
@@ -101,8 +102,10 @@ if (Auth::check()) {
     </div>
 </section>
 
-<div class="landing-footer-note">
-    <a href="register.php" class="btn">جرّب Uploady مجانًا</a>
+<div class="landing-cta">
+    <h2>جاهز تبدأ؟</h2>
+    <p>سجّل حساب مجاني وارفع أول فيديو في أقل من دقيقتين.</p>
+    <a href="register.php" class="btn"><?= Icons::bolt() ?> جرّب Uploady مجانًا</a>
 </div>
 
 <div class="nav" style="justify-content:center;gap:16px;border-top:1px solid var(--border);border-bottom:none;">

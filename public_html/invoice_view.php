@@ -22,7 +22,7 @@ require __DIR__ . '/partials_header.php';
 <div class="card" style="max-width:560px;">
     <div style="display:flex;justify-content:space-between;align-items:start;">
         <h1 style="font-size:20px;">فاتورة #<?= (int) $invoice['id'] ?></h1>
-        <span class="badge <?= $invoiceStatusBadge[$invoice['status']] ?>"><?= $invoiceStatusLabels[$invoice['status']] ?></span>
+        <span class="badge <?= $invoiceStatusBadge[$invoice['status']] ?>"><?= Icons::forBadge($invoice['status']) ?> <?= $invoiceStatusLabels[$invoice['status']] ?></span>
     </div>
 
     <p class="muted">العميل: <?= htmlspecialchars($invoice['user_name']) ?> (<?= htmlspecialchars($invoice['user_email']) ?>)</p>

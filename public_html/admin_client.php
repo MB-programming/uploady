@@ -76,8 +76,9 @@ require __DIR__ . '/partials_header.php';
                     <?php if (!$post['video_path']): ?> · تم حذف الفيديو من السيرفر بعد النشر<?php endif; ?>
                 </p>
             </div>
-            <span class="badge <?= $post['status'] === 'failed' ? 'failed' : ($post['status'] === 'published' ? 'published' : 'pending') ?>">
-                <?= htmlspecialchars($statusLabels[$post['status']] ?? $post['status']) ?>
+            <?php $postBadgeClass = $post['status'] === 'failed' ? 'failed' : ($post['status'] === 'published' ? 'published' : 'pending'); ?>
+            <span class="badge <?= $postBadgeClass ?>">
+                <?= Icons::forBadge($postBadgeClass) ?> <?= htmlspecialchars($statusLabels[$post['status']] ?? $post['status']) ?>
             </span>
         </div>
         <table>
@@ -86,7 +87,7 @@ require __DIR__ . '/partials_header.php';
             <?php foreach (PostTarget::forPost((int) $post['id']) as $target): ?>
                 <tr>
                     <td><?= htmlspecialchars($platformNames[$target['platform']] ?? $target['platform']) ?> — <?= htmlspecialchars($target['display_name']) ?></td>
-                    <td><span class="badge <?= htmlspecialchars($target['status']) ?>"><?= htmlspecialchars($target['status']) ?></span></td>
+                    <td><span class="badge <?= htmlspecialchars($target['status']) ?>"><?= Icons::forBadge($target['status']) ?> <?= htmlspecialchars($target['status']) ?></span></td>
                     <td><?php if ($target['remote_url']): ?><a href="<?= htmlspecialchars($target['remote_url']) ?>" target="_blank" rel="noopener">فتح</a><?php endif; ?></td>
                 </tr>
             <?php endforeach; ?>

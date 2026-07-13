@@ -53,7 +53,7 @@ require __DIR__ . '/partials_header.php';
                 <td><?= htmlspecialchars($invoice['plan_name'] ?? '—') ?></td>
                 <td><?= htmlspecialchars($invoice['period_start']) ?> — <?= htmlspecialchars($invoice['period_end']) ?></td>
                 <td><?= number_format((float) $invoice['amount_egp'], 0) ?> ج.م</td>
-                <td><span class="badge <?= $invoiceStatusBadge[$invoice['status']] ?>"><?= $invoiceStatusLabels[$invoice['status']] ?></span></td>
+                <td><span class="badge <?= $invoiceStatusBadge[$invoice['status']] ?>"><?= Icons::forBadge($invoice['status']) ?> <?= $invoiceStatusLabels[$invoice['status']] ?></span></td>
                 <td style="white-space:nowrap;">
                     <a href="invoice_view.php?id=<?= (int) $invoice['id'] ?>">عرض</a>
                     <?php if ($invoice['status'] !== 'paid'): ?>
