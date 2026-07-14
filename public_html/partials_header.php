@@ -37,6 +37,7 @@ $langToggleHref = 'lang.php?set=' . $otherLang;
                 <div class="sidebar-section"><?= t('nav.admin_section') ?></div>
                 <a href="admin.php" class="sidebar-link<?= $isActive('admin.php', 'admin_client.php') ?>"><?= Icons::shield() ?> <?= t('nav.admin_dashboard') ?></a>
                 <a href="admin_users.php" class="sidebar-link<?= $isActive('admin_users.php', 'admin_user_form.php') ?>"><?= Icons::users() ?> <?= t('nav.admin_users') ?></a>
+                <a href="admin_plans.php" class="sidebar-link<?= $isActive('admin_plans.php', 'admin_plan_form.php') ?>"><?= Icons::package() ?> <?= t('nav.admin_plans') ?></a>
                 <a href="admin_invoices.php" class="sidebar-link<?= $isActive('admin_invoices.php', 'admin_invoice_form.php') ?>"><?= Icons::receipt() ?> <?= t('nav.admin_invoices') ?></a>
             <?php endif; ?>
             <a href="<?= $langToggleHref ?>" class="sidebar-link"><?= Icons::globe() ?> <?= t('common.lang_toggle') ?></a>

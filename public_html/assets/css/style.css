@@ -158,6 +158,22 @@ input:focus, textarea:focus, select:focus {
 }
 textarea { min-height: 100px; resize: vertical; }
 
+input[type=file] {
+    width: 100%; padding: 10px 12px; border-radius: var(--radius-sm); border: 1px dashed var(--border);
+    background: rgba(5,7,13,.6); color: var(--muted); font-size: 13px; font-family: inherit;
+}
+input[type=file]::file-selector-button,
+input[type=file]::-webkit-file-upload-button {
+    margin-inline-end: 14px; padding: 8px 16px; border-radius: 10px; border: none;
+    background: linear-gradient(180deg, #232a3d 0%, #131826 100%); color: #fff;
+    font-family: inherit; font-size: 13px; font-weight: 700; cursor: pointer;
+    transition: background .15s ease;
+}
+input[type=file]::file-selector-button:hover,
+input[type=file]::-webkit-file-upload-button:hover {
+    background: linear-gradient(180deg, #2c3448 0%, #1a2033 100%);
+}
+
 .btn {
     display: inline-flex; align-items: center; justify-content: center; gap: 8px;
     padding: 12px 22px; border-radius: 14px; border: none;
@@ -241,7 +257,7 @@ tr:hover td { background: rgba(255,255,255,.02); }
 .price-card:hover { transform: translateY(-6px); box-shadow: var(--shadow); }
 .price-card.featured { box-shadow: 0 0 0 1px var(--accent), var(--shadow); }
 .price-card h2 { font-size: 18px; }
-.price-value { font-size: 36px; font-weight: 800; margin: 14px 0 4px; filter: blur(7px); user-select: none; }
+.price-value { font-size: 36px; font-weight: 800; margin: 14px 0 4px; }
 .price-period { color: var(--muted); font-size: 13px; margin-bottom: 18px; }
 .price-features { list-style: none; padding: 0; margin: 0 0 20px; text-align: right; }
 .price-features li { padding: 7px 0; border-bottom: 1px solid var(--border); font-size: 14px; }

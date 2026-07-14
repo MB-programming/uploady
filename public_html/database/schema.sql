@@ -1,14 +1,18 @@
 -- Uploady schema (MySQL 5.7+/MariaDB 10.3+, compatible with Hostinger shared hosting)
 SET NAMES utf8mb4;
 
--- Subscription tiers shown on pricing.php. Seeded below; edit rows directly via phpMyAdmin
--- if you need to change prices/quotas later (there's no admin UI for editing plans yet).
+-- Subscription tiers shown on pricing.php. Seeded below; manage from the admin panel
+-- (admin_plans.php) — create, edit, deactivate, or delete plans without touching SQL.
 CREATE TABLE IF NOT EXISTS plans (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL UNIQUE,
     price_egp DECIMAL(10,2) NOT NULL,
     storage_quota_gb INT UNSIGNED NOT NULL,
     max_social_accounts INT UNSIGNED NULL, -- NULL = unlimited; informational only, not enforced yet
+    features TEXT NULL, -- one feature bullet per line, shown on the public pricing page
+    badge_text VARCHAR(60) NULL, -- optional ribbon text (e.g. "Most Popular"); NULL = no ribbon
+    is_featured TINYINT(1) NOT NULL DEFAULT 0, -- highlights the card on the pricing page
+    is_active TINYINT(1) NOT NULL DEFAULT 1, -- inactive plans stay assignable to users but are hidden from pricing.php
     sort_order TINYINT UNSIGNED NOT NULL DEFAULT 0,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -129,8 +133,8 @@ CREATE TABLE IF NOT EXISTS invoices (
     CONSTRAINT fk_invoices_plan FOREIGN KEY (plan_id) REFERENCES plans(id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-INSERT INTO plans (name, price_egp, storage_quota_gb, max_social_accounts, sort_order) VALUES
-    ('الأساسية', 299.00, 10, 3, 1),
-    ('الاحترافية', 750.00, 50, 10, 2),
-    ('الأعمال', 1500.00, 200, NULL, 3)
+INSERT INTO plans (name, price_egp, storage_quota_gb, max_social_accounts, features, badge_text, is_featured, sort_order) VALUES
+    ('الأساسية', 299.00, 10, 3, '10 GB مساحة تخزين\nحساب واحد لكل منصة (يوتيوب / تيك توك / انستجرام)\nنشر فوري أو مجدول\nحذف الفيديو تلقائي بعد النشر', NULL, 0, 1),
+    ('الاحترافية', 750.00, 50, 10, '50 GB مساحة تخزين\nحسابات متعددة على كل منصة\nصورة مصغرة مخصصة (يوتيوب)\nدعم فني بأولوية', 'الأكثر طلبًا', 1, 2),
+    ('الأعمال', 1500.00, 200, NULL, '200 GB مساحة تخزين\nعدد غير محدود من الحسابات\nلوحة تقارير موسعة\nمدير حساب مخصص', NULL, 0, 3)
 ON DUPLICATE KEY UPDATE name = VALUES(name);
