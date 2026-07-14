@@ -11,3 +11,13 @@ document.querySelectorAll('.js-print').forEach(function (btn) {
         window.print();
     });
 });
+
+(function () {
+    var nav = document.querySelector('.nav');
+    if (!nav) return;
+    var onScroll = function () {
+        nav.classList.toggle('is-scrolled', window.scrollY > 12);
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+})();

@@ -27,10 +27,15 @@ if (Auth::check()) {
 </div>
 
 <section class="landing-hero">
+    <div class="hero-grid-bg"></div>
+    <div class="hero-aurora"></div>
     <div class="hero-canvas-wrap" data-pixel-canvas></div>
     <div class="hero-content">
-        <span class="hero-eyebrow"><?= Icons::bolt() ?> نشر تلقائي على كل منصاتك</span>
-        <h1 class="hero-title">فيديو واحد.<br>كل المنصات.</h1>
+        <span class="hero-eyebrow"><span class="dot"></span> نشر تلقائي على كل منصاتك</span>
+        <h1 class="hero-title">
+            <span class="line-solid">فيديو واحد.</span>
+            <span class="line-glow">كل المنصات.</span>
+        </h1>
         <p class="hero-desc">
             ارفع الفيديو مرة واحدة، حط العنوان والوصف والتاجات والصورة المصغرة، اختار المنصات
             (يوتيوب، تيك توك، انستجرام)، وانشر فورًا أو جدول لميعاد لاحق — Uploady بيتكفل بالباقي،
@@ -39,6 +44,10 @@ if (Auth::check()) {
         <div class="hero-ctas">
             <a href="register.php" class="btn"><?= Icons::bolt() ?> ابدأ مجانًا الآن</a>
             <a href="pricing.php" class="btn secondary">شوف الأسعار</a>
+        </div>
+        <div class="hero-scroll-cue">
+            <span>انزل تحت</span>
+            <span class="stem"></span>
         </div>
     </div>
 </section>
@@ -50,6 +59,7 @@ if (Auth::check()) {
 </div>
 
 <section class="section">
+    <span class="kicker">الفكرة</span>
     <h2>الفكرة ببساطة</h2>
     <p class="section-lead">مصمم لصاحب المحتوى أو الوكالة اللي بتدير فيديوهات لعملاء متعددين — كل عميل بحسابه وقنواته الخاصة.</p>
     <div class="feature-grid">
@@ -77,6 +87,7 @@ if (Auth::check()) {
 </section>
 
 <section class="section">
+    <span class="kicker">الخطوات</span>
     <h2>إزاي بيشتغل</h2>
     <div class="steps">
         <div class="step">
@@ -108,12 +119,13 @@ if (Auth::check()) {
     <a href="register.php" class="btn"><?= Icons::bolt() ?> جرّب Uploady مجانًا</a>
 </div>
 
-<div class="nav" style="justify-content:center;gap:16px;border-top:1px solid var(--border);border-bottom:none;">
+<div class="nav nav--footer">
     <a href="privacy.php" class="muted">سياسة الخصوصية</a>
     <a href="terms.php" class="muted">الشروط والأحكام</a>
     <a href="data-deletion.php" class="muted">حذف البيانات</a>
 </div>
 
+<script src="assets/js/site.js"></script>
 <script src="assets/js/vendor/gsap.min.js"></script>
 <script src="assets/js/vendor/ScrollTrigger.min.js"></script>
 <script src="assets/js/pixel-hero.js"></script>
