@@ -22,6 +22,10 @@ $usedGb = Post::storageUsedBytes(Auth::id()) / 1024 ** 3;
 $quotaGb = Plan::quotaGbForUser(Auth::user());
 $pct = min(100, $quotaGb > 0 ? ($usedGb / $quotaGb) * 100 : 0);
 
+$totalVideos = count($posts);
+$publishedVideos = count(array_filter($posts, fn ($p) => $p['status'] === 'published'));
+$pendingVideos = count(array_filter($posts, fn ($p) => in_array($p['status'], ['scheduled', 'processing', 'partially_published'], true)));
+
 $pageTitle = 'لوحة التحكم';
 require __DIR__ . '/partials_header.php';
 ?>
@@ -40,20 +44,52 @@ require __DIR__ . '/partials_header.php';
     <div class="alert error">تعذر تنفيذ العملية — ممكن يكون النشر بدأ بالفعل.</div>
 <?php endif; ?>
 
-<div class="card" style="padding:14px 20px;">
-    <div class="muted">مساحة التخزين المستخدمة: <?= number_format($usedGb, 2) ?> GB من <?= (int) $quotaGb ?> GB</div>
-    <div style="background:#0d0f14;border-radius:6px;height:8px;margin-top:8px;overflow:hidden;">
-        <div style="background:<?= $pct > 90 ? 'var(--err)' : 'var(--accent)' ?>;height:100%;width:<?= round($pct, 1) ?>%;"></div>
+<div class="stat-grid">
+    <div class="stat-tile stat-tile--blue">
+        <div class="stat-icon"><?= Icons::film() ?></div>
+        <div class="stat-value"><?= $totalVideos ?></div>
+        <div class="stat-label">إجمالي الفيديوهات</div>
+    </div>
+    <div class="stat-tile stat-tile--green">
+        <div class="stat-icon"><?= Icons::trendUp() ?></div>
+        <div class="stat-value"><?= $publishedVideos ?></div>
+        <div class="stat-label">تم نشرها بالكامل</div>
+    </div>
+    <div class="stat-tile stat-tile--orange">
+        <div class="stat-icon"><?= Icons::clock() ?></div>
+        <div class="stat-value"><?= $pendingVideos ?></div>
+        <div class="stat-label">قيد الانتظار / النشر</div>
+    </div>
+    <div class="stat-tile stat-tile--pink">
+        <div class="stat-icon"><?= Icons::database() ?></div>
+        <div class="stat-value"><?= number_format($usedGb, 1) ?><span style="font-size:15px;"> / <?= (int) $quotaGb ?> GB</span></div>
+        <div class="stat-label">مساحة التخزين المستخدمة</div>
+        <div class="post-progress" style="margin-top:12px;">
+            <div class="post-progress-bar" style="background:rgba(255,255,255,.25);">
+                <div class="post-progress-fill" style="background:#fff;width:<?= round($pct, 1) ?>%;"></div>
+            </div>
+        </div>
     </div>
 </div>
 
-<p><a class="btn" href="upload.php">+ رفع فيديو جديد</a></p>
+<div class="dash-toolbar">
+    <h2 style="font-size:16px;margin:0;">فيديوهاتك</h2>
+    <a class="btn" href="upload.php"><?= Icons::upload() ?> رفع فيديو جديد</a>
+</div>
 
 <?php if ($posts === []): ?>
     <p class="muted">لسه مفيش فيديوهات مرفوعة.</p>
 <?php endif; ?>
 
-<?php foreach ($posts as $post): ?>
+<?php foreach ($posts as $post):
+    $targets = PostTarget::forPost((int) $post['id']);
+    $targetsTotal = count($targets);
+    $targetsPublished = count(array_filter($targets, fn ($t) => $t['status'] === 'published'));
+    $targetsFailed = count(array_filter($targets, fn ($t) => $t['status'] === 'failed'));
+    $targetsDone = $targetsPublished + $targetsFailed;
+    $progressPct = $targetsTotal > 0 ? round($targetsDone / $targetsTotal * 100) : 0;
+    $progressClass = $targetsFailed > 0 ? 'has-failed' : ($progressPct >= 100 ? 'is-complete' : '');
+?>
     <div class="card">
         <div style="display:flex;justify-content:space-between;align-items:start;gap:14px;">
             <?php if ($post['thumbnail_path']): ?>
@@ -72,10 +108,22 @@ require __DIR__ . '/partials_header.php';
             </span>
         </div>
 
+        <?php if ($targetsTotal > 0): ?>
+            <div class="post-progress">
+                <div class="post-progress-label">
+                    <span>تقدّم النشر على المنصات</span>
+                    <span><?= $targetsDone ?> / <?= $targetsTotal ?></span>
+                </div>
+                <div class="post-progress-bar">
+                    <div class="post-progress-fill <?= $progressClass ?>" style="width:<?= $progressPct ?>%;"></div>
+                </div>
+            </div>
+        <?php endif; ?>
+
         <table>
             <thead><tr><th>المنصة</th><th>العنوان</th><th>الحالة</th><th>رابط</th><th></th></tr></thead>
             <tbody>
-            <?php foreach (PostTarget::forPost((int) $post['id']) as $target):
+            <?php foreach ($targets as $target):
                 $display = PostTarget::displayStatus($target);
                 $stillCancellable = $target['status'] === 'pending' && strtotime($target['scheduled_at']) > time();
             ?>

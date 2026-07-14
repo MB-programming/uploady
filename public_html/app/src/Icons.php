@@ -49,6 +49,21 @@ class Icons
         return self::svg('<path d="M15 6l-6 6 6 6"/>', $class);
     }
 
+    public static function film(string $class = ''): string
+    {
+        return self::svg('<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/><path d="M8 4v5"/><path d="M8 15v5"/><path d="M16 4v5"/><path d="M16 15v5"/>', $class);
+    }
+
+    public static function database(string $class = ''): string
+    {
+        return self::svg('<ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.66 3.58 3 8 3s8-1.34 8-3V5"/><path d="M4 12c0 1.66 3.58 3 8 3s8-1.34 8-3"/>', $class);
+    }
+
+    public static function trendUp(string $class = ''): string
+    {
+        return self::svg('<path d="M3 17l6-6 4 4 7-8"/><path d="M15 6h5v5"/>', $class);
+    }
+
     /** Small icon for a badge, based on its CSS status class (published/paid, failed/cancelled, pending/uploading/unpaid). */
     public static function forBadge(string $status): string
     {
