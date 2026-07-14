@@ -26,10 +26,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $notes = trim((string) ($_POST['notes'] ?? ''));
 
     $client = User::findById($userId);
-    if (!$client || $client['is_admin']) $errors[] = 'اختار عميل صحيح';
-    if (!is_numeric($amount) || (float) $amount <= 0) $errors[] = 'المبلغ لازم يكون رقم أكبر من صفر';
+    if (!$client || $client['is_admin']) $errors[] = t('admin.err_select_valid_client');
+    if (!is_numeric($amount) || (float) $amount <= 0) $errors[] = t('admin.err_amount_invalid');
     if (!strtotime($periodStart) || !strtotime($periodEnd) || strtotime($periodEnd) < strtotime($periodStart)) {
-        $errors[] = 'فترة الفاتورة غير صحيحة';
+        $errors[] = t('admin.err_period_invalid');
     }
 
     if (!$errors) {
@@ -39,11 +39,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$pageTitle = 'فاتورة جديدة';
+$pageTitle = t('admin.new_invoice_title');
 require __DIR__ . '/partials_header.php';
 ?>
-<p><a href="admin_invoices.php">&larr; رجوع للفواتير</a></p>
-<h1>فاتورة جديدة</h1>
+<p><a href="admin_invoices.php"><?= t('invoice.back_to_invoices') ?></a></p>
+<h1><?= t('admin.new_invoice_title') ?></h1>
 
 <?php foreach ($errors as $error): ?>
     <div class="alert error"><?= htmlspecialchars($error) ?></div>
@@ -52,9 +52,9 @@ require __DIR__ . '/partials_header.php';
 <form method="post" class="card" style="max-width:520px;">
     <?= Csrf::field() ?>
 
-    <label>العميل</label>
+    <label><?= t('common.account') ?></label>
     <select name="user_id" required>
-        <option value="">اختار عميل</option>
+        <option value=""><?= t('admin.select_client') ?></option>
         <?php foreach ($clients as $client): ?>
             <option value="<?= (int) $client['id'] ?>" <?= (string) $userId === (string) $client['id'] ? 'selected' : '' ?>>
                 <?= htmlspecialchars($client['name']) ?> (<?= htmlspecialchars($client['email']) ?>)
@@ -62,36 +62,36 @@ require __DIR__ . '/partials_header.php';
         <?php endforeach; ?>
     </select>
 
-    <label>الخطة</label>
+    <label><?= t('invoice.plan') ?></label>
     <select name="plan_id" id="planSelect">
-        <option value="">بدون خطة محددة</option>
+        <option value=""><?= t('admin.no_plan_specified') ?></option>
         <?php foreach ($plans as $plan): ?>
             <option value="<?= (int) $plan['id'] ?>" data-price="<?= (float) $plan['price_egp'] ?>" <?= (string) $planId === (string) $plan['id'] ? 'selected' : '' ?>>
-                <?= htmlspecialchars($plan['name']) ?> — <?= number_format((float) $plan['price_egp'], 0) ?> ج.م
+                <?= htmlspecialchars($plan['name']) ?> — <?= number_format((float) $plan['price_egp'], 0) ?> <?= t('invoice.currency_egp') ?>
             </option>
         <?php endforeach; ?>
     </select>
 
-    <label>المبلغ (ج.م)</label>
+    <label><?= t('admin.amount_label') ?></label>
     <input type="text" name="amount" id="amountInput" value="<?= htmlspecialchars((string) $amount) ?>" required>
 
-    <label>بداية الفترة</label>
+    <label><?= t('admin.period_start_label') ?></label>
     <input type="date" name="period_start" value="<?= htmlspecialchars($periodStart) ?>" required>
 
-    <label>نهاية الفترة</label>
+    <label><?= t('admin.period_end_label') ?></label>
     <input type="date" name="period_end" value="<?= htmlspecialchars($periodEnd) ?>" required>
 
-    <label>الحالة</label>
+    <label><?= t('common.status') ?></label>
     <select name="status">
-        <option value="unpaid" <?= $status === 'unpaid' ? 'selected' : '' ?>>غير مدفوعة</option>
-        <option value="paid" <?= $status === 'paid' ? 'selected' : '' ?>>مدفوعة</option>
-        <option value="cancelled" <?= $status === 'cancelled' ? 'selected' : '' ?>>ملغاة</option>
+        <option value="unpaid" <?= $status === 'unpaid' ? 'selected' : '' ?>><?= t('invoice.status_unpaid') ?></option>
+        <option value="paid" <?= $status === 'paid' ? 'selected' : '' ?>><?= t('invoice.status_paid') ?></option>
+        <option value="cancelled" <?= $status === 'cancelled' ? 'selected' : '' ?>><?= t('invoice.status_cancelled') ?></option>
     </select>
 
-    <label>ملاحظات (اختياري)</label>
+    <label><?= t('admin.notes_optional') ?></label>
     <textarea name="notes"><?= htmlspecialchars($notes) ?></textarea>
 
-    <p><button type="submit" class="btn" style="margin-top:20px;">إصدار الفاتورة</button></p>
+    <p><button type="submit" class="btn" style="margin-top:20px;"><?= t('admin.issue_invoice_submit') ?></button></p>
 </form>
 
 <script src="assets/js/admin_invoice.js"></script>

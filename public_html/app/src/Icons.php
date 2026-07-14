@@ -114,6 +114,11 @@ class Icons
         return self::svg('<path d="M6 3h12v18l-3-2-2 2-2-2-2 2-2-2-1 2V3z"/><path d="M9 8h6"/><path d="M9 12h6"/>', $class);
     }
 
+    public static function globe(string $class = ''): string
+    {
+        return self::svg('<circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3c2.5 2.5 4 5.6 4 9s-1.5 6.5-4 9c-2.5-2.5-4-5.6-4-9s1.5-6.5 4-9z"/>', $class);
+    }
+
     /** Small icon for a badge, based on its CSS status class (published/paid, failed/cancelled, pending/uploading/unpaid). */
     public static function forBadge(string $status): string
     {

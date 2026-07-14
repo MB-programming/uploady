@@ -1,7 +1,7 @@
 (function () {
-    var items = ['يوتيوب', 'يوتيوب Shorts', 'تيك توك', 'انستجرام Reels', 'جدولة تلقائية', 'نشر فوري', 'حذف تلقائي لتوفير المساحة'];
     var track = document.getElementById('marqueeTrack');
     if (!track) return;
+    var items = JSON.parse(track.dataset.items || '[]');
 
     var html = '';
     for (var r = 0; r < 2; r++) {

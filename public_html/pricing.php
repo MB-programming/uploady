@@ -5,45 +5,45 @@ require __DIR__ . '/app/bootstrap.php';
 // "free for a limited time" promotion banner is up (see .price-value / .price-ribbon in style.css).
 $plans = [
     [
-        'name' => 'الأساسية',
+        'name' => t('pricing.plan_basic'),
         'price' => '299',
-        'features' => ['10 GB مساحة تخزين', 'حساب واحد لكل منصة (يوتيوب / تيك توك / انستجرام)', 'نشر فوري أو مجدول', 'حذف الفيديو تلقائي بعد النشر'],
+        'features' => [t('pricing.basic_f1'), t('pricing.basic_f2'), t('pricing.basic_f3'), t('pricing.basic_f4')],
         'featured' => false,
     ],
     [
-        'name' => 'الاحترافية',
+        'name' => t('pricing.plan_pro'),
         'price' => '750',
-        'features' => ['50 GB مساحة تخزين', 'حسابات متعددة على كل منصة', 'صورة مصغرة مخصصة (يوتيوب)', 'دعم فني بأولوية'],
+        'features' => [t('pricing.pro_f1'), t('pricing.pro_f2'), t('pricing.pro_f3'), t('pricing.pro_f4')],
         'featured' => true,
     ],
     [
-        'name' => 'الأعمال',
+        'name' => t('pricing.plan_business'),
         'price' => '1500',
-        'features' => ['200 GB مساحة تخزين', 'عدد غير محدود من الحسابات', 'لوحة تقارير موسعة', 'مدير حساب مخصص'],
+        'features' => [t('pricing.business_f1'), t('pricing.business_f2'), t('pricing.business_f3'), t('pricing.business_f4')],
         'featured' => false,
     ],
 ];
 
-$pageTitle = 'الأسعار';
+$pageTitle = t('nav.pricing');
 require __DIR__ . '/partials_header.php';
 ?>
-<h1>خطط الأسعار</h1>
-<p class="muted">اختار الخطة اللي تناسب حجم شغلك — وكل الخطط بتشمل رفع الفيديو ونشره تلقائي على كل منصاتك المربوطة.</p>
+<h1><?= t('pricing.h1') ?></h1>
+<p class="muted"><?= t('pricing.lead') ?></p>
 
 <div class="pricing-grid">
     <?php foreach ($plans as $plan): ?>
         <div class="card price-card <?= $plan['featured'] ? 'featured' : '' ?>">
-            <div class="price-ribbon">مجانًا لمدة محدودة</div>
+            <div class="price-ribbon"><?= t('pricing.free_ribbon') ?></div>
             <h2><?= htmlspecialchars($plan['name']) ?></h2>
-            <div class="price-value"><?= htmlspecialchars($plan['price']) ?> ج.م</div>
-            <div class="price-period">شهريًا</div>
+            <div class="price-value"><?= htmlspecialchars($plan['price']) ?> <?= t('invoice.currency_egp') ?></div>
+            <div class="price-period"><?= t('pricing.per_month') ?></div>
             <ul class="price-features">
                 <?php foreach ($plan['features'] as $feature): ?>
                     <li><?= htmlspecialchars($feature) ?></li>
                 <?php endforeach; ?>
             </ul>
             <a href="<?= Auth::check() ? 'dashboard.php' : 'register.php' ?>" class="btn <?= $plan['featured'] ? '' : 'secondary' ?>">
-                ابدأ مجانًا الآن
+                <?= t('pricing.cta') ?>
             </a>
         </div>
     <?php endforeach; ?>

@@ -6,7 +6,7 @@ $editId = isset($_GET['id']) ? (int) $_GET['id'] : null;
 $editingUser = $editId ? User::findById($editId) : null;
 if ($editId && !$editingUser) {
     http_response_code(404);
-    exit('User not found.');
+    exit(t('common.not_found_user'));
 }
 
 $errors = [];
@@ -25,15 +25,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $isAdmin = !empty($_POST['is_admin']);
     $planId = $_POST['plan_id'] !== '' ? (int) $_POST['plan_id'] : null;
 
-    if ($name === '') $errors[] = 'الاسم مطلوب';
-    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) $errors[] = 'البريد الإلكتروني غير صحيح';
-    if (User::emailTaken($email, $editingUser['id'] ?? null)) $errors[] = 'البريد الإلكتروني مستخدم بالفعل';
+    if ($name === '') $errors[] = t('auth.err_name_required');
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) $errors[] = t('auth.err_invalid_email');
+    if (User::emailTaken($email, $editingUser['id'] ?? null)) $errors[] = t('profile.err_email_taken');
 
     // Password is required when creating a new user, optional when editing (blank = keep current).
     if (!$editingUser && strlen($password) < 8) {
-        $errors[] = 'كلمة المرور لازم تكون 8 أحرف على الأقل';
+        $errors[] = t('auth.err_password_length');
     } elseif ($editingUser && $password !== '' && strlen($password) < 8) {
-        $errors[] = 'كلمة المرور الجديدة لازم تكون 8 أحرف على الأقل';
+        $errors[] = t('profile.err_new_password_length');
     }
 
     // An admin editing their own row can't strip their own admin flag — avoids locking everyone out.
@@ -58,11 +58,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$pageTitle = $editingUser ? 'تعديل مستخدم' : 'مستخدم جديد';
+$pageTitle = $editingUser ? t('admin.edit_user_title') : t('admin.new_user_title');
 require __DIR__ . '/partials_header.php';
 ?>
-<p><a href="admin_users.php">&larr; رجوع لإدارة المستخدمين</a></p>
-<h1><?= $editingUser ? 'تعديل مستخدم' : 'مستخدم جديد' ?></h1>
+<p><a href="admin_users.php"><?= t('admin.back_to_users') ?></a></p>
+<h1><?= $editingUser ? t('admin.edit_user_title') : t('admin.new_user_title') ?></h1>
 
 <?php foreach ($errors as $error): ?>
     <div class="alert error"><?= htmlspecialchars($error) ?></div>
@@ -71,21 +71,21 @@ require __DIR__ . '/partials_header.php';
 <form method="post" class="card" style="max-width:480px;">
     <?= Csrf::field() ?>
 
-    <label>الاسم</label>
+    <label><?= t('auth.name') ?></label>
     <input type="text" name="name" value="<?= htmlspecialchars($name) ?>" required>
 
-    <label>البريد الإلكتروني</label>
+    <label><?= t('auth.email') ?></label>
     <input type="email" name="email" value="<?= htmlspecialchars($email) ?>" required>
 
-    <label><?= $editingUser ? 'كلمة مرور جديدة (سيبها فاضية عشان تسيب الحالية زي ما هي)' : 'كلمة المرور' ?></label>
+    <label><?= $editingUser ? t('admin.new_password_optional') : t('auth.password') ?></label>
     <input type="password" name="password" <?= $editingUser ? '' : 'required' ?>>
 
-    <label>الخطة</label>
+    <label><?= t('invoice.plan') ?></label>
     <select name="plan_id">
-        <option value="">بدون خطة</option>
+        <option value=""><?= t('admin.no_plan') ?></option>
         <?php foreach ($plans as $planOption): ?>
             <option value="<?= (int) $planOption['id'] ?>" <?= (int) $planId === (int) $planOption['id'] ? 'selected' : '' ?>>
-                <?= htmlspecialchars($planOption['name']) ?> — <?= number_format((float) $planOption['price_egp'], 0) ?> ج.م (<?= $planOption['storage_quota_gb'] ?> GB)
+                <?= htmlspecialchars(sprintf(t('admin.plan_option_format'), $planOption['name'], number_format((float) $planOption['price_egp'], 0), $planOption['storage_quota_gb'])) ?>
             </option>
         <?php endforeach; ?>
     </select>
@@ -93,14 +93,14 @@ require __DIR__ . '/partials_header.php';
     <?php $isSelf = $editingUser && (int) $editingUser['id'] === Auth::id(); ?>
     <label style="display:flex;align-items:center;gap:8px;font-weight:normal;margin-top:16px;">
         <input type="checkbox" name="is_admin" value="1" style="width:auto;" <?= $isAdmin ? 'checked' : '' ?> <?= $isSelf ? 'disabled' : '' ?>>
-        صلاحيات أدمن
+        <?= t('admin.admin_permissions_label') ?>
     </label>
     <?php if ($isSelf): ?>
         <input type="hidden" name="is_admin" value="1">
-        <p class="muted">مايمكنش تشيل صلاحية الأدمن من حسابك انت بنفسك.</p>
+        <p class="muted"><?= t('admin.cant_remove_own_admin') ?></p>
     <?php endif; ?>
 
-    <p><button type="submit" class="btn" style="margin-top:20px;"><?= $editingUser ? 'حفظ التعديلات' : 'إنشاء المستخدم' ?></button></p>
+    <p><button type="submit" class="btn" style="margin-top:20px;"><?= $editingUser ? t('admin.save_changes') : t('admin.create_user') ?></button></p>
 </form>
 
 <?php require __DIR__ . '/partials_footer.php'; ?>

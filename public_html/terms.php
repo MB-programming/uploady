@@ -1,30 +1,24 @@
 <?php
 require __DIR__ . '/app/bootstrap.php';
-$pageTitle = 'الشروط والأحكام';
+$pageTitle = t('legal.terms.title');
 require __DIR__ . '/partials_header.php';
 ?>
 <div class="card">
-<h1>الشروط والأحكام</h1>
+<h1><?= t('legal.terms.title') ?></h1>
 <p class="muted">
-    <strong>ملحوظة:</strong> نموذج أساسي عشان تستوفي شرط "Terms of Service URL" المطلوب أثناء
-    تسجيل التطبيقات على المنصات. راجعه وعدّله قبل الاستخدام الفعلي مع العملاء.
+    <?= t('legal.terms.notice') ?>
 </p>
 
-<h2 style="font-size:16px;">استخدام الخدمة</h2>
-<p>باستخدامك للموقع بتوافق إنك المسؤول الوحيد عن محتوى الفيديوهات اللي بترفعها وعن حقوق النشر
-والملكية الفكرية الخاصة بيها، وعن الالتزام بشروط استخدام كل منصة (يوتيوب، تيك توك، انستجرام) اللي
-بتنشر عليها من خلال حسابك.</p>
+<h2 style="font-size:16px;"><?= t('legal.terms.usage_h2') ?></h2>
+<p><?= t('legal.terms.usage_body') ?></p>
 
-<h2 style="font-size:16px;">ربط حسابات التواصل الاجتماعي</h2>
-<p>لما بتربط حساب يوتيوب/تيك توك/انستجرام، انت بتدّينا إذن محدود (عبر OAuth) بالنشر نيابة عنك حسب
-التعليمات اللي بتحددها إنت بنفسك (العنوان، الوصف، الميعاد). تقدر تفصل أي حساب في أي وقت من صفحة
-"حسابات التواصل الاجتماعي".</p>
+<h2 style="font-size:16px;"><?= t('legal.terms.connecting_h2') ?></h2>
+<p><?= t('legal.terms.connecting_body') ?></p>
 
-<h2 style="font-size:16px;">حدود المسؤولية</h2>
-<p>الخدمة بتنشر الفيديو بناءً على البيانات اللي انت بتدخلها. مش مسؤولين عن أي قرار من المنصات نفسها
-(رفض، حذف، تقييد وصول) يخص محتواك أو حسابك عندهم.</p>
+<h2 style="font-size:16px;"><?= t('legal.terms.liability_h2') ?></h2>
+<p><?= t('legal.terms.liability_body') ?></p>
 
-<h2 style="font-size:16px;">التواصل</h2>
-<p>لأي استفسار: <strong>[ضيف إيميل التواصل هنا]</strong></p>
+<h2 style="font-size:16px;"><?= t('legal.terms.contact_h2') ?></h2>
+<p><?= t('legal.terms.contact_body') ?></p>
 </div>
 <?php require __DIR__ . '/partials_footer.php'; ?>

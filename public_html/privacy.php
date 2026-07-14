@@ -1,35 +1,31 @@
 <?php
 require __DIR__ . '/app/bootstrap.php';
-$pageTitle = 'سياسة الخصوصية';
+$pageTitle = t('legal.privacy.title');
 require __DIR__ . '/partials_header.php';
 ?>
 <div class="card">
-<h1>سياسة الخصوصية</h1>
+<h1><?= t('legal.privacy.title') ?></h1>
 <p class="muted">
-    <strong>ملحوظة:</strong> ده نموذج أساسي عشان تستوفي شرط "Privacy Policy URL" المطلوب من جوجل
-    وميتا وتيك توك أثناء تسجيل التطبيقات. راجعه وعدّله (وحبذا لو مع محامي) قبل ما تعتبره نهائي أو
-    تربطه بعملاء حقيقيين.
+    <?= t('legal.privacy.notice') ?>
 </p>
 
-<h2 style="font-size:16px;">البيانات اللي بنجمعها</h2>
+<h2 style="font-size:16px;"><?= t('legal.privacy.data_collected_h2') ?></h2>
 <ul>
-    <li>بيانات الحساب: الاسم، البريد الإلكتروني، كلمة المرور (مشفّرة).</li>
-    <li>رموز الوصول (Access/Refresh Tokens) لحسابات التواصل الاجتماعي اللي بتربطها (يوتيوب، تيك توك، انستجرام) — بنخزنها مشفّرة ونستخدمها فقط عشان ننشر الفيديوهات اللي بتطلب نشرها بنفسك.</li>
-    <li>ملفات الفيديو وبياناتها (العنوان، الوصف، الهاشتاجات) اللي بترفعها للنشر — بتتخزن مؤقتًا على السيرفر وبتتحذف تلقائيًا فور ما تخلص عملية النشر على كل المنصات المختارة.</li>
+    <li><?= t('legal.privacy.data_item1') ?></li>
+    <li><?= t('legal.privacy.data_item2') ?></li>
+    <li><?= t('legal.privacy.data_item3') ?></li>
 </ul>
 
-<h2 style="font-size:16px;">استخدام البيانات</h2>
-<p>بنستخدم البيانات دي فقط عشان ننفذ الخدمة اللي طلبتها: ربط حساباتك، رفع ونشر الفيديو حسب تعليماتك،
-وعرض حالة النشر لك. مبنبيعش ولا بنشارك بياناتك مع أي طرف تالت لأغراض تسويقية.</p>
+<h2 style="font-size:16px;"><?= t('legal.privacy.usage_h2') ?></h2>
+<p><?= t('legal.privacy.usage_body') ?></p>
 
-<h2 style="font-size:16px;">مدة الاحتفاظ بالبيانات</h2>
-<p>ملفات الفيديو بتتحذف من السيرفر أوتوماتيك بعد ما تخلص عملية النشر (نجاح أو فشل). سجلات النشر
-(العنوان، الحالة، روابط المنشورات) بتفضل محفوظة في حسابك لحد ما تحذفها أو تحذف حسابك.</p>
+<h2 style="font-size:16px;"><?= t('legal.privacy.retention_h2') ?></h2>
+<p><?= t('legal.privacy.retention_body') ?></p>
 
-<h2 style="font-size:16px;">حذف البيانات</h2>
-<p>تقدر تطلب حذف حسابك وكل بياناتك في أي وقت — راجع <a href="data-deletion.php">صفحة حذف البيانات</a>.</p>
+<h2 style="font-size:16px;"><?= t('legal.privacy.deletion_h2') ?></h2>
+<p><?= sprintf(t('legal.privacy.deletion_body'), t('legal.privacy.deletion_link_text')) ?></p>
 
-<h2 style="font-size:16px;">التواصل</h2>
-<p>لأي استفسار عن الخصوصية، تواصل معنا على: <strong>[ضيف إيميل التواصل هنا]</strong></p>
+<h2 style="font-size:16px;"><?= t('legal.privacy.contact_h2') ?></h2>
+<p><?= t('legal.privacy.contact_body') ?></p>
 </div>
 <?php require __DIR__ . '/partials_footer.php'; ?>

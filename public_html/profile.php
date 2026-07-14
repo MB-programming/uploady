@@ -15,15 +15,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $currentPassword = (string) ($_POST['current_password'] ?? '');
     $newPassword = (string) ($_POST['new_password'] ?? '');
 
-    if ($name === '') $errors[] = 'الاسم مطلوب';
-    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) $errors[] = 'البريد الإلكتروني غير صحيح';
-    if (User::emailTaken($email, Auth::id())) $errors[] = 'البريد الإلكتروني مستخدم بالفعل';
+    if ($name === '') $errors[] = t('auth.err_name_required');
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) $errors[] = t('auth.err_invalid_email');
+    if (User::emailTaken($email, Auth::id())) $errors[] = t('profile.err_email_taken');
 
     if ($newPassword !== '') {
         if (!password_verify($currentPassword, $user['password_hash'])) {
-            $errors[] = 'كلمة المرور الحالية غير صحيحة';
+            $errors[] = t('profile.err_current_password_wrong');
         } elseif (strlen($newPassword) < 8) {
-            $errors[] = 'كلمة المرور الجديدة لازم تكون 8 أحرف على الأقل';
+            $errors[] = t('profile.err_new_password_length');
         }
     }
 
@@ -37,13 +37,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$pageTitle = 'حسابي';
+$pageTitle = t('nav.profile');
 require __DIR__ . '/partials_header.php';
 ?>
-<h1>حسابي</h1>
+<h1><?= t('nav.profile') ?></h1>
 
 <?php if (!empty($_GET['updated'])): ?>
-    <div class="alert success">تم حفظ التعديلات.</div>
+    <div class="alert success"><?= t('profile.updated_success') ?></div>
 <?php endif; ?>
 <?php foreach ($errors as $error): ?>
     <div class="alert error"><?= htmlspecialchars($error) ?></div>
@@ -52,25 +52,25 @@ require __DIR__ . '/partials_header.php';
 <form method="post" class="card" style="max-width:480px;">
     <?= Csrf::field() ?>
 
-    <label>الاسم</label>
+    <label><?= t('auth.name') ?></label>
     <input type="text" name="name" value="<?= htmlspecialchars($name) ?>" required>
 
-    <label>البريد الإلكتروني</label>
+    <label><?= t('auth.email') ?></label>
     <input type="email" name="email" value="<?= htmlspecialchars($email) ?>" required>
 
     <hr style="border-color:var(--border);margin:20px 0;">
 
-    <label>كلمة المرور الحالية (لازم بس لو عايز تغيّر كلمة المرور)</label>
+    <label><?= t('profile.current_password_label') ?></label>
     <input type="password" name="current_password">
 
-    <label>كلمة مرور جديدة (سيبها فاضية لو مش عايز تغيّرها)</label>
+    <label><?= t('profile.new_password_label') ?></label>
     <input type="password" name="new_password">
 
-    <p><button type="submit" class="btn" style="margin-top:20px;">حفظ</button></p>
+    <p><button type="submit" class="btn" style="margin-top:20px;"><?= t('common.save') ?></button></p>
 </form>
 
 <div class="card" style="max-width:480px;">
-    <p class="muted">عايز تحذف حسابك نهائيًا؟ <a href="data-deletion.php">من هنا</a>.</p>
+    <p class="muted"><?= t('profile.delete_account_prompt') ?> <a href="data-deletion.php"><?= t('profile.delete_account_link') ?></a>.</p>
 </div>
 
 <?php require __DIR__ . '/partials_footer.php'; ?>

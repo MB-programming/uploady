@@ -39,3 +39,8 @@ if (session_status() === PHP_SESSION_NONE) {
     ]);
     session_start();
 }
+
+function t(string $key): string
+{
+    return Lang::t($key);
+}

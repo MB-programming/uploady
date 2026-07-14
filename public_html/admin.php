@@ -5,9 +5,9 @@ Auth::requireAdmin();
 $clients = User::allClients();
 
 $platformNames = [
-    'youtube' => 'يوتيوب',
-    'tiktok' => 'تيك توك',
-    'instagram' => 'انستجرام',
+    'youtube' => t('platform.youtube'),
+    'tiktok' => t('platform.tiktok'),
+    'instagram' => t('platform.instagram'),
 ];
 
 $rows = [];
@@ -29,49 +29,49 @@ foreach ($clients as $client) {
     ];
 }
 
-$pageTitle = 'لوحة تحكم الأدمن';
+$pageTitle = t('admin.dashboard_h1');
 require __DIR__ . '/partials_header.php';
 ?>
-<h1>لوحة تحكم الأدمن</h1>
+<h1><?= t('admin.dashboard_h1') ?></h1>
 
 <div class="platform-list">
     <div class="platform-card">
-        <div class="muted">إجمالي العملاء</div>
+        <div class="muted"><?= t('admin.stat_total_clients') ?></div>
         <div style="font-size:22px;font-weight:700;"><?= count($rows) ?></div>
     </div>
     <div class="platform-card">
-        <div class="muted">إجمالي الفيديوهات المرفوعة</div>
+        <div class="muted"><?= t('admin.stat_total_videos') ?></div>
         <div style="font-size:22px;font-weight:700;"><?= Post::countAll() ?></div>
     </div>
     <div class="platform-card">
-        <div class="muted">إجمالي المدفوع</div>
-        <div style="font-size:22px;font-weight:700;color:var(--ok);"><?= number_format(Invoice::totalPaidAmount(), 0) ?> ج.م</div>
+        <div class="muted"><?= t('admin.stat_total_paid') ?></div>
+        <div style="font-size:22px;font-weight:700;color:var(--ok);"><?= number_format(Invoice::totalPaidAmount(), 0) ?> <?= t('invoice.currency_egp') ?></div>
     </div>
     <div class="platform-card">
-        <div class="muted">إجمالي غير المدفوع</div>
-        <div style="font-size:22px;font-weight:700;color:var(--warn);"><?= number_format(Invoice::totalUnpaidAmount(), 0) ?> ج.م</div>
+        <div class="muted"><?= t('admin.stat_total_unpaid') ?></div>
+        <div style="font-size:22px;font-weight:700;color:var(--warn);"><?= number_format(Invoice::totalUnpaidAmount(), 0) ?> <?= t('invoice.currency_egp') ?></div>
     </div>
 </div>
 
-<h2 style="font-size:16px;">العملاء</h2>
+<h2 style="font-size:16px;"><?= t('admin.clients_heading') ?></h2>
 
 <div class="card">
 <div style="overflow-x:auto;">
 <table>
     <thead>
         <tr>
-            <th>العميل</th>
-            <th>الخطة</th>
-            <th>تاريخ التسجيل</th>
-            <th>الحسابات المتصلة</th>
-            <th>عدد الفيديوهات</th>
-            <th>المساحة المستخدمة</th>
+            <th><?= t('admin.th_client') ?></th>
+            <th><?= t('invoice.plan') ?></th>
+            <th><?= t('admin.th_registered') ?></th>
+            <th><?= t('admin.th_connected_accounts') ?></th>
+            <th><?= t('admin.th_videos_count') ?></th>
+            <th><?= t('admin.th_storage_used') ?></th>
             <th></th>
         </tr>
     </thead>
     <tbody>
         <?php if ($rows === []): ?>
-            <tr><td colspan="6" class="muted">لسه مفيش عملاء مسجلين.</td></tr>
+            <tr><td colspan="6" class="muted"><?= t('admin.no_clients_yet') ?></td></tr>
         <?php endif; ?>
         <?php foreach ($rows as $row): ?>
             <tr>
@@ -79,11 +79,11 @@ require __DIR__ . '/partials_header.php';
                     <div><?= htmlspecialchars($row['client']['name']) ?></div>
                     <div class="muted"><?= htmlspecialchars($row['client']['email']) ?></div>
                 </td>
-                <td><?= $row['plan_name'] ? htmlspecialchars($row['plan_name']) : '<span class="muted">بدون خطة</span>' ?></td>
+                <td><?= $row['plan_name'] ? htmlspecialchars($row['plan_name']) : '<span class="muted">' . t('admin.no_plan') . '</span>' ?></td>
                 <td><?= htmlspecialchars($row['client']['created_at']) ?></td>
                 <td>
                     <?php if ($row['accounts_total'] === 0): ?>
-                        <span class="muted">مفيش حسابات متصلة</span>
+                        <span class="muted"><?= t('admin.no_connected_accounts_short') ?></span>
                     <?php else: ?>
                         <?php foreach ($platformNames as $key => $label): ?>
                             <?php if ($row['platform_counts'][$key] > 0): ?>
@@ -95,9 +95,9 @@ require __DIR__ . '/partials_header.php';
                 <td><?= $row['videos_total'] ?></td>
                 <td><?= number_format($row['used_gb'], 2) ?> / <?= (int) $row['quota_gb'] ?> GB</td>
                 <td>
-                    <a href="admin_client.php?id=<?= (int) $row['client']['id'] ?>">التفاصيل</a>
+                    <a href="admin_client.php?id=<?= (int) $row['client']['id'] ?>"><?= t('admin.details') ?></a>
                     ·
-                    <a href="admin_user_form.php?id=<?= (int) $row['client']['id'] ?>">تعديل</a>
+                    <a href="admin_user_form.php?id=<?= (int) $row['client']['id'] ?>"><?= t('common.edit') ?></a>
                 </td>
             </tr>
         <?php endforeach; ?>

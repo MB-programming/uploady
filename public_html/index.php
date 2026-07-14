@@ -5,14 +5,25 @@ if (Auth::check()) {
     header('Location: dashboard.php');
     exit;
 }
+
+$otherLang = Lang::locale() === 'en' ? 'ar' : 'en';
+$marqueeItems = [
+    t('platform.youtube'),
+    t('platform.youtube_shorts'),
+    t('platform.tiktok'),
+    t('marquee.instagram_reels'),
+    t('marquee.auto_schedule'),
+    t('marquee.instant_publish'),
+    t('marquee.auto_delete'),
+];
 ?>
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="<?= Lang::locale() ?>" dir="<?= Lang::dir() ?>">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Uploady — ارفع فيديو واحد، انشره على كل حاجة</title>
-<meta name="description" content="ارفع الفيديو مرة واحدة، حدد المنصات، وانشر فورًا أو جدول — Uploady بينشر لك على يوتيوب وتيك توك وانستجرام ويمسح الملف من السيرفر تلقائي بعد كده.">
+<title><?= htmlspecialchars(t('landing.meta_title')) ?></title>
+<meta name="description" content="<?= htmlspecialchars(t('landing.meta_description')) ?>">
 <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
@@ -20,9 +31,10 @@ if (Auth::check()) {
 <div class="nav">
     <a href="index.php"><strong>Uploady</strong></a>
     <div>
-        <a href="pricing.php">الأسعار</a>
-        <a href="login.php">تسجيل دخول</a>
-        <a href="register.php">حساب جديد</a>
+        <a href="pricing.php"><?= t('nav.pricing') ?></a>
+        <a href="login.php"><?= t('nav.login') ?></a>
+        <a href="register.php"><?= t('nav.register') ?></a>
+        <a href="lang.php?set=<?= $otherLang ?>"><?= Icons::globe() ?> <?= t('common.lang_toggle') ?></a>
     </div>
 </div>
 
@@ -31,98 +43,96 @@ if (Auth::check()) {
     <div class="hero-aurora"></div>
     <div class="hero-canvas-wrap" data-pixel-canvas></div>
     <div class="hero-content">
-        <span class="hero-eyebrow"><span class="dot"></span> نشر تلقائي على كل منصاتك</span>
+        <span class="hero-eyebrow"><span class="dot"></span> <?= t('landing.hero_eyebrow') ?></span>
         <h1 class="hero-title">
-            <span class="line-solid">فيديو واحد.</span>
-            <span class="line-glow">كل المنصات.</span>
+            <span class="line-solid"><?= t('landing.hero_title_1') ?></span>
+            <span class="line-glow"><?= t('landing.hero_title_2') ?></span>
         </h1>
         <p class="hero-desc">
-            ارفع الفيديو مرة واحدة، حط العنوان والوصف والتاجات والصورة المصغرة، اختار المنصات
-            (يوتيوب، تيك توك، انستجرام)، وانشر فورًا أو جدول لميعاد لاحق — Uploady بيتكفل بالباقي،
-            وبيمسح الفيديو من السيرفر تلقائي بعد النشر عشان يوفرلك المساحة.
+            <?= t('landing.hero_desc') ?>
         </p>
         <div class="hero-ctas">
-            <a href="register.php" class="btn"><?= Icons::bolt() ?> ابدأ مجانًا الآن</a>
-            <a href="pricing.php" class="btn secondary">شوف الأسعار</a>
+            <a href="register.php" class="btn"><?= Icons::bolt() ?> <?= t('pricing.cta') ?></a>
+            <a href="pricing.php" class="btn secondary"><?= t('landing.hero_cta_secondary') ?></a>
         </div>
         <div class="hero-scroll-cue">
-            <span>انزل تحت</span>
+            <span><?= t('landing.scroll_cue') ?></span>
             <span class="stem"></span>
         </div>
     </div>
 </section>
 
 <div class="marquee-wrap">
-    <div class="marquee-track" id="marqueeTrack">
-        <!-- duplicated once in PHP below for a seamless loop -->
+    <div class="marquee-track" id="marqueeTrack" data-items="<?= htmlspecialchars(json_encode($marqueeItems), ENT_QUOTES) ?>">
+        <!-- duplicated once in JS below for a seamless loop -->
     </div>
 </div>
 
 <section class="section">
-    <span class="kicker">الفكرة</span>
-    <h2>الفكرة ببساطة</h2>
-    <p class="section-lead">مصمم لصاحب المحتوى أو الوكالة اللي بتدير فيديوهات لعملاء متعددين — كل عميل بحسابه وقنواته الخاصة.</p>
+    <span class="kicker"><?= t('landing.kicker_idea') ?></span>
+    <h2><?= t('landing.idea_h2') ?></h2>
+    <p class="section-lead"><?= t('landing.idea_lead') ?></p>
     <div class="feature-grid">
         <div class="feature-card">
             <div class="feature-icon"><?= Icons::upload() ?></div>
-            <h3>ارفع مرة واحدة</h3>
-            <p>فيديو، عنوان، وصف، هاشتاجات، وصورة مصغرة — كل بيانات النشر في مكان واحد.</p>
+            <h3><?= t('landing.feature1_title') ?></h3>
+            <p><?= t('landing.feature1_desc') ?></p>
         </div>
         <div class="feature-card">
             <div class="feature-icon"><?= Icons::link() ?></div>
-            <h3>اربط قنواتك</h3>
-            <p>يوتيوب (فيديو عادي أو Shorts)، تيك توك، وانستجرام Reels — بربط آمن عن طريق OAuth.</p>
+            <h3><?= t('landing.feature2_title') ?></h3>
+            <p><?= t('landing.feature2_desc') ?></p>
         </div>
         <div class="feature-card">
             <div class="feature-icon"><?= Icons::clock() ?></div>
-            <h3>انشر أو جدول</h3>
-            <p>دوس نشر وينشر فورًا، أو حدد ميعاد لاحق — وتقدر تعدّل الميعاد أو تلغي لحد ما يستحق.</p>
+            <h3><?= t('landing.feature3_title') ?></h3>
+            <p><?= t('landing.feature3_desc') ?></p>
         </div>
         <div class="feature-card">
             <div class="feature-icon"><?= Icons::trash() ?></div>
-            <h3>حذف تلقائي للمساحة</h3>
-            <p>بمجرد ما الفيديو ينشر على كل المنصات، بيتمسح من السيرفر أوتوماتيك — مساحتك محفوظة.</p>
+            <h3><?= t('landing.feature4_title') ?></h3>
+            <p><?= t('landing.feature4_desc') ?></p>
         </div>
     </div>
 </section>
 
 <section class="section">
-    <span class="kicker">الخطوات</span>
-    <h2>إزاي بيشتغل</h2>
+    <span class="kicker"><?= t('landing.kicker_steps') ?></span>
+    <h2><?= t('landing.steps_h2') ?></h2>
     <div class="steps">
         <div class="step">
             <div class="step-num"></div>
-            <h3>سجّل واربط حساباتك</h3>
-            <p>حساب مجاني، واربط قنوات التواصل الاجتماعي اللي عايز تنشر عليها.</p>
+            <h3><?= t('landing.step1_title') ?></h3>
+            <p><?= t('landing.step1_desc') ?></p>
         </div>
         <div class="step">
             <div class="step-num"></div>
-            <h3>ارفع الفيديو وبياناته</h3>
-            <p>العنوان، الوصف، التاجات، الصورة المصغرة، واختار المنصات المطلوبة.</p>
+            <h3><?= t('landing.step2_title') ?></h3>
+            <p><?= t('landing.step2_desc') ?></p>
         </div>
         <div class="step">
             <div class="step-num"></div>
-            <h3>انشر فورًا أو جدول</h3>
-            <p>Uploady بينشر على كل منصة وبيتابع الحالة لحد ما يخلص.</p>
+            <h3><?= t('landing.step3_title') ?></h3>
+            <p><?= t('landing.step3_desc') ?></p>
         </div>
         <div class="step">
             <div class="step-num"></div>
-            <h3>يتمسح تلقائي</h3>
-            <p>الفيديو بيتحذف من السيرفر أوتوماتيك بعد النشر — من غير ما تعمل حاجة.</p>
+            <h3><?= t('landing.step4_title') ?></h3>
+            <p><?= t('landing.step4_desc') ?></p>
         </div>
     </div>
 </section>
 
 <div class="landing-cta">
-    <h2>جاهز تبدأ؟</h2>
-    <p>سجّل حساب مجاني وارفع أول فيديو في أقل من دقيقتين.</p>
-    <a href="register.php" class="btn"><?= Icons::bolt() ?> جرّب Uploady مجانًا</a>
+    <h2><?= t('landing.cta_h2') ?></h2>
+    <p><?= t('landing.cta_desc') ?></p>
+    <a href="register.php" class="btn"><?= Icons::bolt() ?> <?= t('landing.cta_button') ?></a>
 </div>
 
 <div class="nav nav--footer">
-    <a href="privacy.php" class="muted">سياسة الخصوصية</a>
-    <a href="terms.php" class="muted">الشروط والأحكام</a>
-    <a href="data-deletion.php" class="muted">حذف البيانات</a>
+    <a href="privacy.php" class="muted"><?= t('footer.privacy') ?></a>
+    <a href="terms.php" class="muted"><?= t('footer.terms') ?></a>
+    <a href="data-deletion.php" class="muted"><?= t('footer.data_deletion') ?></a>
 </div>
 
 <script src="assets/js/site.js"></script>

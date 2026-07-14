@@ -403,3 +403,13 @@ tr:hover td { background: rgba(255,255,255,.02); }
 }
 .landing-cta h2 { font-size: clamp(1.6rem, 3vw, 2.1rem); margin-bottom: 12px; }
 .landing-cta p { color: var(--muted); margin-bottom: 26px; }
+
+/* ---- LTR mirroring (English) — the site defaults to RTL, these flip the few
+   physical (non-logical) left/right rules used by the top nav and sidebar. ---- */
+html[dir="ltr"] .nav a { margin-left: 0; margin-right: 18px; }
+html[dir="ltr"] .sidebar { border-left: none; border-right: 1px solid var(--border); }
+html[dir="ltr"] .sidebar-toggle { right: auto; left: 14px; }
+@media (max-width: 880px) {
+    html[dir="ltr"] .sidebar { right: auto; left: 0; transform: translateX(-100%); }
+    html[dir="ltr"] .sidebar.is-open { transform: translateX(0); }
+}

@@ -167,7 +167,7 @@ class PostTarget
             'failed' => $failed,
             'pct' => $pct,
             'class' => $failed > 0 ? 'has-failed' : ($pct >= 100 ? 'is-complete' : ''),
-            'label' => "$pct% ($done من $total منصات)",
+            'label' => sprintf(t('progress.summary'), $pct, $done, $total),
         ];
     }
 
@@ -176,14 +176,14 @@ class PostTarget
     {
         if ($target['status'] === 'pending') {
             if (strtotime($target['scheduled_at']) > time()) {
-                return ['label' => 'مجدول لـ ' . $target['scheduled_at'], 'class' => 'pending'];
+                return ['label' => sprintf(t('target_status.scheduled_for'), $target['scheduled_at']), 'class' => 'pending'];
             }
-            return ['label' => 'قيد النشر', 'class' => 'uploading'];
+            return ['label' => t('target_status.publishing'), 'class' => 'uploading'];
         }
         return match ($target['status']) {
-            'uploading' => ['label' => 'جاري الرفع', 'class' => 'uploading'],
-            'published' => ['label' => 'تم النشر', 'class' => 'published'],
-            'failed' => ['label' => 'فشل', 'class' => 'failed'],
+            'uploading' => ['label' => t('target_status.uploading'), 'class' => 'uploading'],
+            'published' => ['label' => t('target_status.published'), 'class' => 'published'],
+            'failed' => ['label' => t('target_status.failed'), 'class' => 'failed'],
             default => ['label' => $target['status'], 'class' => 'pending'],
         };
     }
