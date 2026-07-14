@@ -51,6 +51,8 @@ require __DIR__ . '/partials_header.php';
         <input type="password" name="password_confirm" required>
         <p><button class="btn" type="submit" style="margin-top:16px;"><?= t('auth.register_submit') ?></button></p>
     </form>
-    <p class="muted"><?= t('auth.have_account') ?> <a href="login.php"><?= t('auth.login_link') ?></a></p>
+    <p class="muted" style="text-align:center;margin:18px 0;"><?= t('auth.or_divider') ?></p>
+    <p><a href="oauth/google_login.php" class="btn secondary" style="width:100%;"><?= Icons::globe() ?> <?= t('auth.google_signin') ?></a></p>
+    <p class="muted" style="margin-top:18px;"><?= t('auth.have_account') ?> <a href="login.php"><?= t('auth.login_link') ?></a></p>
 </div>
 <?php require __DIR__ . '/partials_footer.php'; ?>

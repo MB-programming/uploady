@@ -123,6 +123,15 @@ CREATE TABLE IF NOT EXISTS oauth_states (
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- Forgot-password tokens: one active token per user, expiring after 1 hour.
+CREATE TABLE IF NOT EXISTS password_resets (
+    token VARCHAR(64) NOT NULL PRIMARY KEY,
+    user_id INT UNSIGNED NOT NULL,
+    expires_at DATETIME NOT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_password_resets_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 -- Notifications sent from the admin panel to users. Broadcasts are fanned out into one row
 -- per recipient at send time, so each user's read state is tracked independently.
 CREATE TABLE IF NOT EXISTS notifications (

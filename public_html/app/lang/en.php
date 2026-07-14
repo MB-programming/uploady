@@ -448,4 +448,25 @@ return [
     'notif.err_select_user' => 'Select a valid user',
     'notif.recent_sent' => 'Recently Sent Notifications',
     'notif.recipients_count' => '%d recipients',
+
+    // forgot / reset password
+    'auth.forgot_password_link' => 'Forgot your password?',
+    'auth.forgot_password_title' => 'Reset Password',
+    'auth.reset_link_sent' => "If that email is registered with us, you'll receive a password reset link within a few minutes.",
+    'auth.send_reset_link' => 'Send Reset Link',
+    'auth.back_to_login' => '&larr; Back to Login',
+    'auth.reset_invalid_title' => 'Invalid Link',
+    'auth.reset_invalid_body' => 'This reset link has expired or was already used.',
+    'auth.request_new_link' => 'Request a new link',
+    'auth.reset_password_title' => 'Set a New Password',
+    'auth.new_password_label2' => 'New Password',
+    'auth.reset_success' => 'Your password has been changed — log in with your new password.',
+    'auth.reset_email_subject' => 'Password Reset — Uploady',
+    'auth.reset_email_intro' => 'We received a request to reset your password. Click the link below within the next hour to set a new one:',
+
+    // google login
+    'auth.or_divider' => 'or',
+    'auth.google_signin' => 'Sign in with Google',
+    'auth.err_google_state' => 'An error occurred signing in with Google, please try again.',
+    'auth.err_google_exception' => 'Could not sign in with your Google account.',
 ];

@@ -448,4 +448,25 @@ return [
     'notif.err_select_user' => 'اختار مستخدم صحيح',
     'notif.recent_sent' => 'آخر الإشعارات المرسلة',
     'notif.recipients_count' => '%d مستلم',
+
+    // forgot / reset password
+    'auth.forgot_password_link' => 'نسيت كلمة المرور؟',
+    'auth.forgot_password_title' => 'استعادة كلمة المرور',
+    'auth.reset_link_sent' => 'لو الإيميل ده مسجل عندنا، هيوصلك رابط لإعادة تعيين كلمة المرور خلال دقائق.',
+    'auth.send_reset_link' => 'إرسال رابط إعادة التعيين',
+    'auth.back_to_login' => '&larr; رجوع لتسجيل الدخول',
+    'auth.reset_invalid_title' => 'الرابط غير صالح',
+    'auth.reset_invalid_body' => 'رابط إعادة التعيين ده منتهي الصلاحية أو مستخدم قبل كده.',
+    'auth.request_new_link' => 'اطلب رابط جديد',
+    'auth.reset_password_title' => 'تعيين كلمة مرور جديدة',
+    'auth.new_password_label2' => 'كلمة المرور الجديدة',
+    'auth.reset_success' => 'تم تغيير كلمة المرور بنجاح، سجّل دخولك بكلمة المرور الجديدة.',
+    'auth.reset_email_subject' => 'إعادة تعيين كلمة المرور — Uploady',
+    'auth.reset_email_intro' => 'استلمنا طلب لإعادة تعيين كلمة المرور بتاعتك. دوس على الرابط ده خلال ساعة عشان تعمل كلمة مرور جديدة:',
+
+    // google login
+    'auth.or_divider' => 'أو',
+    'auth.google_signin' => 'الدخول بحساب جوجل',
+    'auth.err_google_state' => 'حصل خطأ أثناء الدخول بجوجل، حاول تاني.',
+    'auth.err_google_exception' => 'تعذر الدخول بحساب جوجل.',
 ];
