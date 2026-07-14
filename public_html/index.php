@@ -16,20 +16,31 @@ $marqueeItems = [
     t('marquee.instant_publish'),
     t('marquee.auto_delete'),
 ];
+
+$seoTitle = Settings::get('seo_site_title') ?: t('landing.meta_title');
+$seoDescription = Settings::get('seo_meta_description') ?: t('landing.meta_description');
+$seoKeywords = Settings::get('seo_meta_keywords');
+$logoPath = Settings::get('site_logo_path');
+$faviconPath = Settings::get('site_favicon_path');
+$brandHtml = $logoPath
+    ? '<img src="' . htmlspecialchars($logoPath) . '" alt="' . htmlspecialchars($seoTitle) . '" class="brand-logo">'
+    : '<strong>' . htmlspecialchars(t('common.brand')) . '</strong>';
 ?>
 <!DOCTYPE html>
 <html lang="<?= Lang::locale() ?>" dir="<?= Lang::dir() ?>">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title><?= htmlspecialchars(t('landing.meta_title')) ?></title>
-<meta name="description" content="<?= htmlspecialchars(t('landing.meta_description')) ?>">
+<title><?= htmlspecialchars($seoTitle) ?></title>
+<meta name="description" content="<?= htmlspecialchars($seoDescription) ?>">
+<?php if ($seoKeywords): ?><meta name="keywords" content="<?= htmlspecialchars($seoKeywords) ?>"><?php endif; ?>
+<?php if ($faviconPath): ?><link rel="icon" href="<?= htmlspecialchars($faviconPath) ?>"><?php endif; ?>
 <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
 
 <div class="nav">
-    <a href="index.php"><strong>Uploady</strong></a>
+    <a href="index.php"><?= $brandHtml ?></a>
     <div>
         <a href="pricing.php"><?= t('nav.pricing') ?></a>
         <a href="login.php"><?= t('nav.login') ?></a>

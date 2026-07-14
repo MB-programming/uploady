@@ -5,13 +5,25 @@ $currentScript = basename($_SERVER['SCRIPT_NAME']);
 $isActive = fn (string ...$scripts): string => in_array($currentScript, $scripts, true) ? ' is-active' : '';
 $otherLang = Lang::locale() === 'en' ? 'ar' : 'en';
 $langToggleHref = 'lang.php?set=' . $otherLang;
+
+$siteTitle = Settings::get('seo_site_title', t('common.brand'));
+$metaDescription = Settings::get('seo_meta_description');
+$metaKeywords = Settings::get('seo_meta_keywords');
+$logoPath = Settings::get('site_logo_path');
+$faviconPath = Settings::get('site_favicon_path');
+$brandHtml = $logoPath
+    ? '<img src="' . htmlspecialchars($logoPath) . '" alt="' . htmlspecialchars($siteTitle) . '" class="brand-logo">'
+    : htmlspecialchars(t('common.brand'));
 ?>
 <!DOCTYPE html>
 <html lang="<?= Lang::locale() ?>" dir="<?= Lang::dir() ?>">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title><?= htmlspecialchars($pageTitle ?? t('common.brand')) ?></title>
+<title><?= htmlspecialchars($pageTitle ?? $siteTitle) ?></title>
+<?php if ($metaDescription): ?><meta name="description" content="<?= htmlspecialchars($metaDescription) ?>"><?php endif; ?>
+<?php if ($metaKeywords): ?><meta name="keywords" content="<?= htmlspecialchars($metaKeywords) ?>"><?php endif; ?>
+<?php if ($faviconPath): ?><link rel="icon" href="<?= htmlspecialchars($faviconPath) ?>"><?php endif; ?>
 <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
@@ -23,7 +35,7 @@ $langToggleHref = 'lang.php?set=' . $otherLang;
     <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-brand">
-            <a href="dashboard.php"><?= t('common.brand') ?></a>
+            <a href="dashboard.php"><?= $brandHtml ?></a>
             <button type="button" class="sidebar-close" id="sidebarClose" aria-label="<?= t('common.close') ?>"><?= Icons::close() ?></button>
         </div>
         <nav class="sidebar-nav">
@@ -39,6 +51,7 @@ $langToggleHref = 'lang.php?set=' . $otherLang;
                 <a href="admin_users.php" class="sidebar-link<?= $isActive('admin_users.php', 'admin_user_form.php') ?>"><?= Icons::users() ?> <?= t('nav.admin_users') ?></a>
                 <a href="admin_plans.php" class="sidebar-link<?= $isActive('admin_plans.php', 'admin_plan_form.php') ?>"><?= Icons::package() ?> <?= t('nav.admin_plans') ?></a>
                 <a href="admin_invoices.php" class="sidebar-link<?= $isActive('admin_invoices.php', 'admin_invoice_form.php') ?>"><?= Icons::receipt() ?> <?= t('nav.admin_invoices') ?></a>
+                <a href="admin_settings.php" class="sidebar-link<?= $isActive('admin_settings.php') ?>"><?= Icons::gear() ?> <?= t('nav.admin_settings') ?></a>
             <?php endif; ?>
             <a href="<?= $langToggleHref ?>" class="sidebar-link"><?= Icons::globe() ?> <?= t('common.lang_toggle') ?></a>
         </nav>
@@ -48,7 +61,7 @@ $langToggleHref = 'lang.php?set=' . $otherLang;
     <div class="container">
 <?php else: ?>
 <div class="nav">
-    <a href="index.php"><strong><?= t('common.brand') ?></strong></a>
+    <a href="index.php"><strong><?= $brandHtml ?></strong></a>
     <div>
         <a href="pricing.php"><?= t('nav.pricing') ?></a>
         <a href="login.php"><?= t('nav.login') ?></a>

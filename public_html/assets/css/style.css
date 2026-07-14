@@ -95,6 +95,8 @@ a:hover { color: #fff; }
 }
 .sidebar-brand { display: flex; align-items: center; justify-content: space-between; padding: 4px 6px 22px; }
 .sidebar-brand a { font-size: 19px; font-weight: 800; letter-spacing: -.02em; color: var(--text); text-decoration: none; }
+.brand-logo { max-height: 34px; max-width: 160px; display: block; }
+.nav .brand-logo { max-height: 28px; }
 .sidebar-close { display: none; background: none; border: none; color: var(--muted); cursor: pointer; padding: 4px; }
 .sidebar-close .icon { width: 20px; height: 20px; }
 

@@ -1,6 +1,14 @@
 -- Uploady schema (MySQL 5.7+/MariaDB 10.3+, compatible with Hostinger shared hosting)
 SET NAMES utf8mb4;
 
+-- Generic key/value store for admin-configurable settings: SEO meta tags, logo/favicon
+-- paths, and SMTP credentials (smtp_password stored encrypted via Crypto::encrypt()).
+CREATE TABLE IF NOT EXISTS settings (
+    setting_key VARCHAR(100) NOT NULL PRIMARY KEY,
+    setting_value TEXT NULL,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 -- Subscription tiers shown on pricing.php. Seeded below; manage from the admin panel
 -- (admin_plans.php) — create, edit, deactivate, or delete plans without touching SQL.
 CREATE TABLE IF NOT EXISTS plans (
