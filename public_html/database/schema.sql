@@ -123,6 +123,19 @@ CREATE TABLE IF NOT EXISTS oauth_states (
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- Notifications sent from the admin panel to users. Broadcasts are fanned out into one row
+-- per recipient at send time, so each user's read state is tracked independently.
+CREATE TABLE IF NOT EXISTS notifications (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    user_id INT UNSIGNED NOT NULL,
+    title VARCHAR(200) NOT NULL,
+    body TEXT NOT NULL,
+    is_read TINYINT(1) NOT NULL DEFAULT 0,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    KEY idx_notifications_user (user_id, is_read),
+    CONSTRAINT fk_notifications_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 -- Manually-managed billing records — there's no payment gateway wired up, so an admin creates
 -- these and marks them paid/unpaid by hand (e.g. after a bank transfer or cash payment).
 CREATE TABLE IF NOT EXISTS invoices (

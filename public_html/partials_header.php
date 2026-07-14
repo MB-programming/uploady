@@ -14,6 +14,7 @@ $faviconPath = Settings::get('site_favicon_path');
 $brandHtml = $logoPath
     ? '<img src="' . htmlspecialchars($logoPath) . '" alt="' . htmlspecialchars($siteTitle) . '" class="brand-logo">'
     : htmlspecialchars(t('common.brand'));
+$unreadNotifications = $loggedIn ? Notification::unreadCountForUser(Auth::id()) : 0;
 ?>
 <!DOCTYPE html>
 <html lang="<?= Lang::locale() ?>" dir="<?= Lang::dir() ?>">
@@ -44,6 +45,10 @@ $brandHtml = $logoPath
             <a href="accounts.php" class="sidebar-link<?= $isActive('accounts.php') ?>"><?= Icons::link() ?> <?= t('nav.accounts') ?></a>
             <a href="reports.php" class="sidebar-link<?= $isActive('reports.php', 'invoices.php', 'invoice_view.php') ?>"><?= Icons::barChart() ?> <?= t('nav.reports') ?></a>
             <a href="pricing.php" class="sidebar-link<?= $isActive('pricing.php') ?>"><?= Icons::tag() ?> <?= t('nav.pricing') ?></a>
+            <a href="notifications.php" class="sidebar-link<?= $isActive('notifications.php') ?>">
+                <?= Icons::bell() ?> <?= t('nav.notifications') ?>
+                <?php if ($unreadNotifications > 0): ?><span class="badge failed" style="margin-inline-start:auto;padding:2px 8px;"><?= $unreadNotifications ?></span><?php endif; ?>
+            </a>
             <a href="profile.php" class="sidebar-link<?= $isActive('profile.php') ?>"><?= Icons::user() ?> <?= t('nav.profile') ?></a>
             <?php if (Auth::isAdmin()): ?>
                 <div class="sidebar-section"><?= t('nav.admin_section') ?></div>
@@ -51,6 +56,7 @@ $brandHtml = $logoPath
                 <a href="admin_users.php" class="sidebar-link<?= $isActive('admin_users.php', 'admin_user_form.php') ?>"><?= Icons::users() ?> <?= t('nav.admin_users') ?></a>
                 <a href="admin_plans.php" class="sidebar-link<?= $isActive('admin_plans.php', 'admin_plan_form.php') ?>"><?= Icons::package() ?> <?= t('nav.admin_plans') ?></a>
                 <a href="admin_invoices.php" class="sidebar-link<?= $isActive('admin_invoices.php', 'admin_invoice_form.php') ?>"><?= Icons::receipt() ?> <?= t('nav.admin_invoices') ?></a>
+                <a href="admin_notifications.php" class="sidebar-link<?= $isActive('admin_notifications.php') ?>"><?= Icons::bell() ?> <?= t('nav.admin_notifications') ?></a>
                 <a href="admin_settings.php" class="sidebar-link<?= $isActive('admin_settings.php') ?>"><?= Icons::gear() ?> <?= t('nav.admin_settings') ?></a>
             <?php endif; ?>
             <a href="<?= $langToggleHref ?>" class="sidebar-link"><?= Icons::globe() ?> <?= t('common.lang_toggle') ?></a>
