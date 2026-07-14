@@ -163,6 +163,42 @@ CREATE TABLE IF NOT EXISTS invoices (
     CONSTRAINT fk_invoices_plan FOREIGN KEY (plan_id) REFERENCES plans(id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- Comment-to-DM auto replies (Instagram): a rule watches one published Instagram video and
+-- DMs commenters matching the keyword, optionally gated on the commenter following the account.
+-- See database/migrations/008_auto_replies.sql for the full column-by-column commentary.
+CREATE TABLE IF NOT EXISTS auto_reply_rules (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    user_id INT UNSIGNED NOT NULL,
+    post_target_id INT UNSIGNED NOT NULL,
+    keyword VARCHAR(190) NULL,
+    dm_message TEXT NOT NULL,
+    require_follow TINYINT(1) NOT NULL DEFAULT 0,
+    follow_prompt TEXT NULL,
+    is_active TINYINT(1) NOT NULL DEFAULT 1,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    KEY idx_auto_reply_rules_user (user_id),
+    CONSTRAINT fk_auto_reply_rules_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT fk_auto_reply_rules_target FOREIGN KEY (post_target_id) REFERENCES post_targets(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS auto_reply_events (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    rule_id INT UNSIGNED NOT NULL,
+    comment_id VARCHAR(190) NOT NULL,
+    commenter_id VARCHAR(190) NULL,
+    commenter_username VARCHAR(190) NULL,
+    status ENUM('awaiting_follow','completed','failed','expired') NOT NULL,
+    error_message TEXT NULL,
+    prompt_sent_at DATETIME NULL,
+    completed_at DATETIME NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY uniq_auto_reply_comment (rule_id, comment_id),
+    KEY idx_auto_reply_events_status (rule_id, status),
+    CONSTRAINT fk_auto_reply_events_rule FOREIGN KEY (rule_id) REFERENCES auto_reply_rules(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 INSERT INTO plans (name, price_egp, storage_quota_gb, max_social_accounts, features, badge_text, is_featured, sort_order) VALUES
     ('الأساسية', 299.00, 10, 3, '10 GB مساحة تخزين\nحساب واحد لكل منصة (يوتيوب / تيك توك / انستجرام)\nنشر فوري أو مجدول\nحذف الفيديو تلقائي بعد النشر', NULL, 0, 1),
     ('الاحترافية', 750.00, 50, 10, '50 GB مساحة تخزين\nحسابات متعددة على كل منصة\nصورة مصغرة مخصصة (يوتيوب)\nدعم فني بأولوية', 'الأكثر طلبًا', 1, 2),

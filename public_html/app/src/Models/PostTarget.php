@@ -152,6 +152,21 @@ class PostTarget
         return true;
     }
 
+    /** Published Instagram videos a user can attach an auto-reply rule to (newest first). */
+    public static function publishedInstagramForUser(int $userId): array
+    {
+        $stmt = Database::get()->prepare(
+            "SELECT pt.id, pt.title, pt.remote_url, pt.updated_at, sa.display_name AS account_name
+             FROM post_targets pt
+             JOIN posts p ON p.id = pt.post_id
+             JOIN social_accounts sa ON sa.id = pt.social_account_id
+             WHERE p.user_id = ? AND pt.platform = 'instagram' AND pt.status = 'published' AND pt.remote_post_id IS NOT NULL
+             ORDER BY pt.updated_at DESC LIMIT 100"
+        );
+        $stmt->execute([$userId]);
+        return $stmt->fetchAll();
+    }
+
     /** Aggregate progress across a post's targets: how many finished (published or failed) out of how many total. */
     public static function progressSummary(array $targets): array
     {

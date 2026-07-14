@@ -10,8 +10,9 @@ $params = [
     'redirect_uri' => $config['redirect_uri'] ?: App::url('oauth/instagram_callback.php'),
     'response_type' => 'code',
     // Instagram publishing is done through a Facebook Page connected to an Instagram
-    // Business/Creator account, so we need Page + Instagram permissions.
-    'scope' => 'instagram_basic,instagram_content_publish,pages_show_list,pages_read_engagement,business_management',
+    // Business/Creator account, so we need Page + Instagram permissions. The comments/
+    // messaging scopes power the comment-to-DM auto replies (auto_replies.php).
+    'scope' => 'instagram_basic,instagram_content_publish,instagram_manage_comments,instagram_manage_messages,pages_show_list,pages_read_engagement,pages_manage_metadata,business_management',
     'state' => $state,
 ];
 
