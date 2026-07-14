@@ -63,7 +63,10 @@ require __DIR__ . '/partials_header.php';
 <?php if ($posts === []): ?>
     <p class="muted">لسه مفيش فيديوهات مرفوعة.</p>
 <?php endif; ?>
-<?php foreach ($posts as $post): ?>
+<?php foreach ($posts as $post):
+    $targets = PostTarget::forPost((int) $post['id']);
+    $progress = PostTarget::progressSummary($targets);
+?>
     <div class="card">
         <div style="display:flex;justify-content:space-between;align-items:start;gap:14px;">
             <?php if ($post['thumbnail_path']): ?>
@@ -78,13 +81,26 @@ require __DIR__ . '/partials_header.php';
             </div>
             <?php $postBadgeClass = $post['status'] === 'failed' ? 'failed' : ($post['status'] === 'published' ? 'published' : 'pending'); ?>
             <span class="badge <?= $postBadgeClass ?>">
-                <?= Icons::forBadge($postBadgeClass) ?> <?= htmlspecialchars($statusLabels[$post['status']] ?? $post['status']) ?>
+                <?= Icons::forBadge($postBadgeClass) ?> <?= htmlspecialchars($statusLabels[$post['status']] ?? $post['status']) ?><?php if ($progress['total'] > 0): ?> — <?= htmlspecialchars($progress['label']) ?><?php endif; ?>
             </span>
         </div>
+
+        <?php if ($progress['total'] > 0): ?>
+            <div class="post-progress">
+                <div class="post-progress-label">
+                    <span>تقدّم النشر على المنصات</span>
+                    <span><?= $progress['done'] ?> / <?= $progress['total'] ?></span>
+                </div>
+                <div class="post-progress-bar">
+                    <div class="post-progress-fill <?= $progress['class'] ?>" style="width:<?= $progress['pct'] ?>%;"></div>
+                </div>
+            </div>
+        <?php endif; ?>
+
         <table>
             <thead><tr><th>المنصة</th><th>العنوان</th><th>الحالة</th><th>رابط</th></tr></thead>
             <tbody>
-            <?php foreach (PostTarget::forPost((int) $post['id']) as $target): $display = PostTarget::displayStatus($target); ?>
+            <?php foreach ($targets as $target): $display = PostTarget::displayStatus($target); ?>
                 <tr>
                     <td><?= htmlspecialchars($platformNames[$target['platform']] ?? $target['platform']) ?> — <?= htmlspecialchars($target['display_name']) ?></td>
                     <td><?= htmlspecialchars($target['title']) ?></td>

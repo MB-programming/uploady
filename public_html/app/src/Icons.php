@@ -64,6 +64,56 @@ class Icons
         return self::svg('<path d="M3 17l6-6 4 4 7-8"/><path d="M15 6h5v5"/>', $class);
     }
 
+    public static function home(string $class = ''): string
+    {
+        return self::svg('<path d="M4 11l8-7 8 7"/><path d="M6 9.5V20a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V9.5"/><path d="M10 21v-6h4v6"/>', $class);
+    }
+
+    public static function users(string $class = ''): string
+    {
+        return self::svg('<circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-5.5 6-5.5s6 2.2 6 5.5"/><path d="M16 8.2a3.2 3.2 0 1 1 0 6.4"/><path d="M21 20c0-2.7-1.7-4.7-4-5.3"/>', $class);
+    }
+
+    public static function barChart(string $class = ''): string
+    {
+        return self::svg('<path d="M4 20V10"/><path d="M12 20V4"/><path d="M20 20v-7"/>', $class);
+    }
+
+    public static function user(string $class = ''): string
+    {
+        return self::svg('<circle cx="12" cy="8" r="4"/><path d="M4 20c0-3.9 3.6-7 8-7s8 3.1 8 7"/>', $class);
+    }
+
+    public static function shield(string $class = ''): string
+    {
+        return self::svg('<path d="M12 3l7 3v6c0 4.5-3 8-7 9-4-1-7-4.5-7-9V6l7-3z"/><path d="M9 12l2 2 4-4"/>', $class);
+    }
+
+    public static function logout(string $class = ''): string
+    {
+        return self::svg('<path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3"/><path d="M4 12h12"/><path d="M12 8l4 4-4 4"/>', $class);
+    }
+
+    public static function tag(string $class = ''): string
+    {
+        return self::svg('<path d="M12 3h6a2 2 0 0 1 2 2v6a2 2 0 0 1-.6 1.4l-9 9a2 2 0 0 1-2.8 0l-5-5a2 2 0 0 1 0-2.8l9-9A2 2 0 0 1 12 3z"/><circle cx="16" cy="8" r="1.4" fill="currentColor" stroke="none"/>', $class);
+    }
+
+    public static function menu(string $class = ''): string
+    {
+        return self::svg('<path d="M4 7h16"/><path d="M4 12h16"/><path d="M4 17h16"/>', $class);
+    }
+
+    public static function close(string $class = ''): string
+    {
+        return self::svg('<path d="M6 6l12 12"/><path d="M18 6L6 18"/>', $class);
+    }
+
+    public static function receipt(string $class = ''): string
+    {
+        return self::svg('<path d="M6 3h12v18l-3-2-2 2-2-2-2 2-2-2-1 2V3z"/><path d="M9 8h6"/><path d="M9 12h6"/>', $class);
+    }
+
     /** Small icon for a badge, based on its CSS status class (published/paid, failed/cancelled, pending/uploading/unpaid). */
     public static function forBadge(string $status): string
     {

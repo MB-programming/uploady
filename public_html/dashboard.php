@@ -83,12 +83,7 @@ require __DIR__ . '/partials_header.php';
 
 <?php foreach ($posts as $post):
     $targets = PostTarget::forPost((int) $post['id']);
-    $targetsTotal = count($targets);
-    $targetsPublished = count(array_filter($targets, fn ($t) => $t['status'] === 'published'));
-    $targetsFailed = count(array_filter($targets, fn ($t) => $t['status'] === 'failed'));
-    $targetsDone = $targetsPublished + $targetsFailed;
-    $progressPct = $targetsTotal > 0 ? round($targetsDone / $targetsTotal * 100) : 0;
-    $progressClass = $targetsFailed > 0 ? 'has-failed' : ($progressPct >= 100 ? 'is-complete' : '');
+    $progress = PostTarget::progressSummary($targets);
 ?>
     <div class="card">
         <div style="display:flex;justify-content:space-between;align-items:start;gap:14px;">
@@ -104,18 +99,18 @@ require __DIR__ . '/partials_header.php';
             </div>
             <?php $postBadgeClass = $post['status'] === 'failed' ? 'failed' : ($post['status'] === 'published' ? 'published' : 'pending'); ?>
             <span class="badge <?= $postBadgeClass ?>">
-                <?= Icons::forBadge($postBadgeClass) ?> <?= htmlspecialchars($statusLabels[$post['status']] ?? $post['status']) ?>
+                <?= Icons::forBadge($postBadgeClass) ?> <?= htmlspecialchars($statusLabels[$post['status']] ?? $post['status']) ?><?php if ($progress['total'] > 0): ?> — <?= htmlspecialchars($progress['label']) ?><?php endif; ?>
             </span>
         </div>
 
-        <?php if ($targetsTotal > 0): ?>
+        <?php if ($progress['total'] > 0): ?>
             <div class="post-progress">
                 <div class="post-progress-label">
                     <span>تقدّم النشر على المنصات</span>
-                    <span><?= $targetsDone ?> / <?= $targetsTotal ?></span>
+                    <span><?= $progress['done'] ?> / <?= $progress['total'] ?></span>
                 </div>
                 <div class="post-progress-bar">
-                    <div class="post-progress-fill <?= $progressClass ?>" style="width:<?= $progressPct ?>%;"></div>
+                    <div class="post-progress-fill <?= $progress['class'] ?>" style="width:<?= $progress['pct'] ?>%;"></div>
                 </div>
             </div>
         <?php endif; ?>

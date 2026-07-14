@@ -152,6 +152,25 @@ class PostTarget
         return true;
     }
 
+    /** Aggregate progress across a post's targets: how many finished (published or failed) out of how many total. */
+    public static function progressSummary(array $targets): array
+    {
+        $total = count($targets);
+        $published = count(array_filter($targets, fn ($t) => $t['status'] === 'published'));
+        $failed = count(array_filter($targets, fn ($t) => $t['status'] === 'failed'));
+        $done = $published + $failed;
+        $pct = $total > 0 ? (int) round($done / $total * 100) : 0;
+
+        return [
+            'total' => $total,
+            'done' => $done,
+            'failed' => $failed,
+            'pct' => $pct,
+            'class' => $failed > 0 ? 'has-failed' : ($pct >= 100 ? 'is-complete' : ''),
+            'label' => "$pct% ($done من $total منصات)",
+        ];
+    }
+
     /** Display status for a target: distinguishes "about to publish" from "genuinely scheduled later". */
     public static function displayStatus(array $target): array
     {
