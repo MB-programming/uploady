@@ -16,7 +16,7 @@ $quotaGb = Plan::quotaGbForUser($client);
 $usedGb = Post::storageUsedBytes($clientId) / 1024 ** 3;
 
 $statusLabels = [
-    'scheduled' => 'مجدول',
+    'scheduled' => 'قيد الانتظار',
     'processing' => 'جاري النشر',
     'published' => 'تم النشر',
     'partially_published' => 'نُشر جزئيًا',
@@ -82,12 +82,13 @@ require __DIR__ . '/partials_header.php';
             </span>
         </div>
         <table>
-            <thead><tr><th>المنصة</th><th>الحالة</th><th>رابط</th></tr></thead>
+            <thead><tr><th>المنصة</th><th>العنوان</th><th>الحالة</th><th>رابط</th></tr></thead>
             <tbody>
-            <?php foreach (PostTarget::forPost((int) $post['id']) as $target): ?>
+            <?php foreach (PostTarget::forPost((int) $post['id']) as $target): $display = PostTarget::displayStatus($target); ?>
                 <tr>
                     <td><?= htmlspecialchars($platformNames[$target['platform']] ?? $target['platform']) ?> — <?= htmlspecialchars($target['display_name']) ?></td>
-                    <td><span class="badge <?= htmlspecialchars($target['status']) ?>"><?= Icons::forBadge($target['status']) ?> <?= htmlspecialchars($target['status']) ?></span></td>
+                    <td><?= htmlspecialchars($target['title']) ?></td>
+                    <td><span class="badge <?= htmlspecialchars($display['class']) ?>"><?= Icons::forBadge($target['status']) ?> <?= htmlspecialchars($display['label']) ?></span></td>
                     <td><?php if ($target['remote_url']): ?><a href="<?= htmlspecialchars($target['remote_url']) ?>" target="_blank" rel="noopener">فتح</a><?php endif; ?></td>
                 </tr>
             <?php endforeach; ?>

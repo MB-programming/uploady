@@ -64,12 +64,20 @@ CREATE TABLE IF NOT EXISTS posts (
     CONSTRAINT fk_posts_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- One row per (post, platform) publish attempt
+-- One row per (post, platform) publish attempt. Each target carries its OWN caption and its
+-- OWN publish time — a video can go out now on YouTube and tomorrow on TikTok, with different
+-- text on each. posts.title/description/tags/visibility are legacy/unused for publishing now;
+-- posts.title survives only as the user's own reference label in the dashboard.
 CREATE TABLE IF NOT EXISTS post_targets (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     post_id INT UNSIGNED NOT NULL,
     social_account_id INT UNSIGNED NOT NULL,
     platform ENUM('youtube','youtube_shorts','tiktok','instagram') NOT NULL,
+    title VARCHAR(200) NOT NULL,
+    description TEXT NULL,
+    tags VARCHAR(500) NULL,
+    visibility ENUM('public','unlisted','private') NOT NULL DEFAULT 'public', -- meaningful for YouTube only
+    scheduled_at DATETIME NOT NULL, -- publish-now targets get scheduled_at = NOW() at creation time
     status ENUM('pending','uploading','published','failed') NOT NULL DEFAULT 'pending',
     remote_post_id VARCHAR(190) NULL, -- video id/permalink on the destination platform
     remote_url VARCHAR(500) NULL,
@@ -81,7 +89,7 @@ CREATE TABLE IF NOT EXISTS post_targets (
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     KEY idx_targets_post (post_id),
-    KEY idx_targets_pending (status),
+    KEY idx_targets_due (status, scheduled_at),
     CONSTRAINT fk_targets_post FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
     CONSTRAINT fk_targets_account FOREIGN KEY (social_account_id) REFERENCES social_accounts(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

@@ -5,16 +5,10 @@ Auth::requireLogin();
 $posts = Post::forUser(Auth::id());
 
 $statusLabels = [
-    'scheduled' => 'مجدول',
+    'scheduled' => 'قيد الانتظار',
     'processing' => 'جاري النشر',
     'published' => 'تم النشر',
     'partially_published' => 'نُشر جزئيًا',
-    'failed' => 'فشل',
-];
-$targetStatusLabels = [
-    'pending' => 'في الانتظار',
-    'uploading' => 'جاري الرفع',
-    'published' => 'تم النشر',
     'failed' => 'فشل',
 ];
 $platformNames = [
@@ -34,10 +28,10 @@ require __DIR__ . '/partials_header.php';
 <h1>الفيديوهات</h1>
 
 <?php if (!empty($_GET['created'])): ?>
-    <div class="alert success">تم حفظ الفيديو وهيتم نشره حسب الميعاد المحدد.</div>
+    <div class="alert success">تم حفظ الفيديو وهيتم نشره حسب الميعاد المحدد لكل منصة.</div>
 <?php endif; ?>
 <?php if (!empty($_GET['cancelled'])): ?>
-    <div class="alert success">تم إلغاء الفيديو وحذفه من السيرفر.</div>
+    <div class="alert success">تم إلغاء النشر على المنصة دي.</div>
 <?php endif; ?>
 <?php if (!empty($_GET['rescheduled'])): ?>
     <div class="alert success">تم تعديل ميعاد النشر.</div>
@@ -68,9 +62,7 @@ require __DIR__ . '/partials_header.php';
             <div style="flex:1;">
                 <h2 style="font-size:17px;margin-bottom:4px;"><?= htmlspecialchars($post['title']) ?></h2>
                 <p class="muted">
-                    <?= $post['status'] === 'scheduled' && strtotime($post['scheduled_at']) > time()
-                        ? 'مجدول لـ ' . htmlspecialchars($post['scheduled_at'])
-                        : 'أُنشئ في ' . htmlspecialchars($post['created_at']) ?>
+                    أُنشئ في <?= htmlspecialchars($post['created_at']) ?>
                     <?php if (!$post['video_path']): ?> · تم حذف الفيديو من السيرفر بعد النشر<?php endif; ?>
                 </p>
             </div>
@@ -80,37 +72,42 @@ require __DIR__ . '/partials_header.php';
             </span>
         </div>
 
-        <?php $stillCancellable = $post['status'] === 'scheduled' && strtotime($post['scheduled_at']) > time(); ?>
-        <?php if ($stillCancellable): ?>
-            <div style="display:flex;gap:10px;align-items:center;margin:10px 0;flex-wrap:wrap;">
-                <form method="post" action="post_action.php" style="display:flex;gap:6px;align-items:center;">
-                    <?= Csrf::field() ?>
-                    <input type="hidden" name="action" value="reschedule">
-                    <input type="hidden" name="post_id" value="<?= (int) $post['id'] ?>">
-                    <input type="datetime-local" name="scheduled_at" required style="width:auto;">
-                    <button type="submit" class="btn secondary" style="padding:6px 12px;font-size:13px;">تعديل الميعاد</button>
-                </form>
-                <form method="post" action="post_action.php" data-confirm="إلغاء الفيديو وحذفه من السيرفر؟">
-                    <?= Csrf::field() ?>
-                    <input type="hidden" name="action" value="cancel">
-                    <input type="hidden" name="post_id" value="<?= (int) $post['id'] ?>">
-                    <button type="submit" class="btn danger" style="padding:6px 12px;font-size:13px;">إلغاء</button>
-                </form>
-            </div>
-        <?php endif; ?>
-
         <table>
-            <thead><tr><th>المنصة</th><th>الحالة</th><th>رابط</th></tr></thead>
+            <thead><tr><th>المنصة</th><th>العنوان</th><th>الحالة</th><th>رابط</th><th></th></tr></thead>
             <tbody>
-            <?php foreach (PostTarget::forPost((int) $post['id']) as $target): ?>
+            <?php foreach (PostTarget::forPost((int) $post['id']) as $target):
+                $display = PostTarget::displayStatus($target);
+                $stillCancellable = $target['status'] === 'pending' && strtotime($target['scheduled_at']) > time();
+            ?>
                 <tr>
                     <td><?= htmlspecialchars($platformNames[$target['platform']] ?? $target['platform']) ?> — <?= htmlspecialchars($target['display_name']) ?></td>
-                    <td><span class="badge <?= htmlspecialchars($target['status']) ?>"><?= Icons::forBadge($target['status']) ?> <?= htmlspecialchars($targetStatusLabels[$target['status']] ?? $target['status']) ?></span>
+                    <td><?= htmlspecialchars($target['title']) ?></td>
+                    <td>
+                        <span class="badge <?= htmlspecialchars($display['class']) ?>"><?= Icons::forBadge($target['status']) ?> <?= htmlspecialchars($display['label']) ?></span>
                         <?php if ($target['status'] === 'failed' && $target['error_message']): ?>
                             <div class="muted"><?= htmlspecialchars($target['error_message']) ?></div>
                         <?php endif; ?>
                     </td>
                     <td><?php if ($target['remote_url']): ?><a href="<?= htmlspecialchars($target['remote_url']) ?>" target="_blank" rel="noopener">فتح</a><?php endif; ?></td>
+                    <td style="white-space:nowrap;">
+                        <?php if ($stillCancellable): ?>
+                            <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
+                                <form method="post" action="target_action.php" style="display:flex;gap:4px;align-items:center;">
+                                    <?= Csrf::field() ?>
+                                    <input type="hidden" name="action" value="reschedule">
+                                    <input type="hidden" name="target_id" value="<?= (int) $target['id'] ?>">
+                                    <input type="datetime-local" name="scheduled_at" required style="width:auto;font-size:12px;padding:4px 6px;">
+                                    <button type="submit" class="btn secondary" style="padding:4px 8px;font-size:12px;">تعديل</button>
+                                </form>
+                                <form method="post" action="target_action.php" data-confirm="إلغاء النشر على المنصة دي؟">
+                                    <?= Csrf::field() ?>
+                                    <input type="hidden" name="action" value="cancel">
+                                    <input type="hidden" name="target_id" value="<?= (int) $target['id'] ?>">
+                                    <button type="submit" class="btn danger" style="padding:4px 8px;font-size:12px;">إلغاء</button>
+                                </form>
+                            </div>
+                        <?php endif; ?>
+                    </td>
                 </tr>
             <?php endforeach; ?>
             </tbody>

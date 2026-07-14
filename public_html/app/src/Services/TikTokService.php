@@ -7,13 +7,13 @@
  */
 class TikTokService
 {
-    public static function publish(array $target, array $post, array $account): void
+    public static function publish(array $target, array $account): void
     {
         $session = PostTarget::uploadSession($target);
         $accessToken = self::ensureFreshToken($account);
 
         if (empty($session['phase'])) {
-            self::initAndUpload($target, $post, $accessToken);
+            self::initAndUpload($target, $accessToken);
             return;
         }
 
@@ -22,10 +22,10 @@ class TikTokService
         }
     }
 
-    private static function initAndUpload(array $target, array $post, string $accessToken): void
+    private static function initAndUpload(array $target, string $accessToken): void
     {
-        $privacyLevel = self::pickPrivacyLevel($post, $accessToken);
-        $videoPath = $post['video_path'];
+        $privacyLevel = self::pickPrivacyLevel($target, $accessToken);
+        $videoPath = $target['video_path'];
         $fileSize = filesize($videoPath);
 
         $initResponse = Http::request('POST', 'https://open.tiktokapis.com/v2/post/publish/video/init/', [
@@ -35,7 +35,7 @@ class TikTokService
             ],
             'json' => [
                 'post_info' => [
-                    'title' => mb_substr($post['title'] . ' ' . self::hashtags($post['tags']), 0, 2200),
+                    'title' => mb_substr($target['title'] . ' ' . self::hashtags($target['tags']), 0, 2200),
                     'privacy_level' => $privacyLevel,
                     'disable_duet' => false,
                     'disable_comment' => false,
@@ -103,7 +103,7 @@ class TikTokService
         // check again on the next cron tick.
     }
 
-    private static function pickPrivacyLevel(array $post, string $accessToken): string
+    private static function pickPrivacyLevel(array $target, string $accessToken): string
     {
         $response = Http::request('POST', 'https://open.tiktokapis.com/v2/post/publish/creator_info/query/', [
             'headers' => [
@@ -115,7 +115,7 @@ class TikTokService
 
         $options = $response['json']['data']['privacy_level_options'] ?? [];
 
-        if ($post['visibility'] === 'public' && in_array('PUBLIC_TO_EVERYONE', $options, true)) {
+        if ($target['visibility'] === 'public' && in_array('PUBLIC_TO_EVERYONE', $options, true)) {
             return 'PUBLIC_TO_EVERYONE';
         }
         // Unaudited apps only ever get SELF_ONLY back from creator_info — this is TikTok's

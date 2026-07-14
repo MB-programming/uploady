@@ -8,26 +8,26 @@
  */
 class InstagramService
 {
-    public static function publish(array $target, array $post, array $account): void
+    public static function publish(array $target, array $account): void
     {
         $session = PostTarget::uploadSession($target);
         $pageAccessToken = SocialAccount::accessToken($account); // Page tokens don't expire via refresh_token
 
         if (empty($session['phase'])) {
-            self::createContainer($target, $post, $account, $pageAccessToken);
+            self::createContainer($target, $account, $pageAccessToken);
             return;
         }
 
         if ($session['phase'] === 'container_processing') {
-            self::pollContainer($target, $post, $account, $session, $pageAccessToken);
+            self::pollContainer($target, $account, $session, $pageAccessToken);
         }
     }
 
-    private static function createContainer(array $target, array $post, array $account, string $pageAccessToken): void
+    private static function createContainer(array $target, array $account, string $pageAccessToken): void
     {
         $igUserId = $account['platform_account_id'];
-        $publicVideoUrl = App::url('media/serve.php?token=' . $post['public_token']);
-        $caption = mb_substr(trim($post['title'] . "\n\n" . $post['description'] . "\n" . self::hashtags($post['tags'])), 0, 2200);
+        $publicVideoUrl = App::url('media/serve.php?token=' . $target['public_token']);
+        $caption = mb_substr(trim($target['title'] . "\n\n" . $target['description'] . "\n" . self::hashtags($target['tags'])), 0, 2200);
 
         $response = Http::request('POST', "https://graph.facebook.com/v19.0/$igUserId/media", [
             'form' => [
@@ -49,7 +49,7 @@ class InstagramService
         ]);
     }
 
-    private static function pollContainer(array $target, array $post, array $account, array $session, string $pageAccessToken): void
+    private static function pollContainer(array $target, array $account, array $session, string $pageAccessToken): void
     {
         $containerId = $session['container_id'];
 

@@ -7,27 +7,27 @@
  */
 class YouTubeService
 {
-    public static function publish(array $target, array $post, array $account): void
+    public static function publish(array $target, array $account): void
     {
         $accessToken = self::ensureFreshToken($account);
 
         $categoryId = '22'; // People & Blogs — reasonable generic default
-        $tags = array_values(array_filter(array_map('trim', explode(',', (string) $post['tags']))));
+        $tags = array_values(array_filter(array_map('trim', explode(',', (string) $target['tags']))));
 
         $metadata = [
             'snippet' => [
-                'title' => mb_substr($post['title'], 0, 100),
-                'description' => (string) $post['description'],
+                'title' => mb_substr($target['title'], 0, 100),
+                'description' => (string) $target['description'],
                 'tags' => $tags,
                 'categoryId' => $categoryId,
             ],
             'status' => [
-                'privacyStatus' => $post['visibility'],
+                'privacyStatus' => $target['visibility'],
                 'selfDeclaredMadeForKids' => false,
             ],
         ];
 
-        $videoPath = $post['video_path'];
+        $videoPath = $target['video_path'];
         $fileSize = filesize($videoPath);
 
         $initResponse = Http::request('POST', 'https://www.googleapis.com/upload/youtube/v3/videos?uploadType=resumable&part=snippet,status', [
@@ -55,8 +55,8 @@ class YouTubeService
 
         $videoId = $uploadResponse['json']['id'];
 
-        if (!empty($post['thumbnail_path']) && is_file($post['thumbnail_path'])) {
-            self::trySetThumbnail($accessToken, $videoId, $post['thumbnail_path']);
+        if (!empty($target['thumbnail_path']) && is_file($target['thumbnail_path'])) {
+            self::trySetThumbnail($accessToken, $videoId, $target['thumbnail_path']);
         }
 
         PostTarget::markPublished($target['id'], $videoId, "https://youtu.be/$videoId");

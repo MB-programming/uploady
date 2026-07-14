@@ -34,14 +34,15 @@ function platformServiceClass(string $platform): string
     };
 }
 
-function finalizePostIfDone(array $post): void
+function finalizePostIfDone(int $postId): void
 {
-    $remaining = PostTarget::pendingForPost((int) $post['id']);
+    $remaining = PostTarget::pendingForPost($postId);
     if ($remaining !== []) {
         return;
     }
 
-    $targets = PostTarget::forPost((int) $post['id']);
+    $post = Post::find($postId);
+    $targets = PostTarget::forPost($postId);
     $publishedCount = count(array_filter($targets, fn ($t) => $t['status'] === 'published'));
     $failedCount = count(array_filter($targets, fn ($t) => $t['status'] === 'failed'));
 
@@ -52,57 +53,62 @@ function finalizePostIfDone(array $post): void
     } else {
         $overallStatus = 'failed';
     }
-    Post::updateStatus((int) $post['id'], $overallStatus);
+    Post::updateStatus($postId, $overallStatus);
 
     // The whole point of doing this on shared hosting: don't let uploaded videos pile up on disk.
     if ($post['video_path'] && is_file($post['video_path'])) {
         @unlink($post['video_path']);
     }
-    Post::markVideoDeleted((int) $post['id']);
-    echo "Post {$post['id']}: finalized as $overallStatus, video file removed.\n";
+    Post::markVideoDeleted($postId);
+    echo "Post $postId: finalized as $overallStatus, video file removed.\n";
 }
 
-$duePosts = Post::due();
-echo count($duePosts) . " due post(s) found.\n";
+$dueTargets = PostTarget::due();
+echo count($dueTargets) . " due target(s) found.\n";
 
-foreach ($duePosts as $post) {
-    if ($post['status'] === 'scheduled') {
-        Post::updateStatus((int) $post['id'], 'processing');
+$touchedPostIds = [];
+$startedPosts = [];
+
+foreach ($dueTargets as $target) {
+    $postId = (int) $target['post_id'];
+    $touchedPostIds[$postId] = true;
+
+    if (!isset($startedPosts[$postId])) {
+        Post::updateStatus($postId, 'processing');
+        $startedPosts[$postId] = true;
     }
 
-    $pendingTargets = PostTarget::pendingForPost((int) $post['id']);
+    if ($target['attempts'] >= MAX_ATTEMPTS) {
+        PostTarget::markFailed($target['id'], 'Exceeded maximum retry attempts');
+        continue;
+    }
 
-    foreach ($pendingTargets as $target) {
+    PostTarget::markUploading($target['id']);
+
+    try {
+        $account = SocialAccount::find((int) $target['social_account_id']);
+        if (!$account) {
+            throw new RuntimeException('Connected social account no longer exists.');
+        }
+
+        $serviceClass = platformServiceClass($target['platform']);
+        $serviceClass::publish($target, $account);
+
+        echo "Post $postId / target {$target['id']} ({$target['platform']}): step completed.\n";
+    } catch (Throwable $e) {
+        error_log("[cron/publish] post=$postId target={$target['id']} platform={$target['platform']}: " . $e->getMessage());
+        $target['attempts']++; // markUploading already incremented in DB; mirror it locally for this check
         if ($target['attempts'] >= MAX_ATTEMPTS) {
-            PostTarget::markFailed($target['id'], 'Exceeded maximum retry attempts');
-            continue;
+            PostTarget::markFailed($target['id'], $e->getMessage());
+        } else {
+            PostTarget::recordError($target['id'], $e->getMessage());
         }
-
-        PostTarget::markUploading($target['id']);
-
-        try {
-            $account = SocialAccount::find((int) $target['social_account_id']);
-            if (!$account) {
-                throw new RuntimeException('Connected social account no longer exists.');
-            }
-
-            $serviceClass = platformServiceClass($target['platform']);
-            $serviceClass::publish($target, $post, $account);
-
-            echo "Post {$post['id']} / target {$target['id']} ({$target['platform']}): step completed.\n";
-        } catch (Throwable $e) {
-            error_log("[cron/publish] post={$post['id']} target={$target['id']} platform={$target['platform']}: " . $e->getMessage());
-            $target['attempts']++; // markUploading already incremented in DB; mirror it locally for this check
-            if ($target['attempts'] >= MAX_ATTEMPTS) {
-                PostTarget::markFailed($target['id'], $e->getMessage());
-            } else {
-                PostTarget::recordError($target['id'], $e->getMessage());
-            }
-            echo "Post {$post['id']} / target {$target['id']}: error — " . $e->getMessage() . "\n";
-        }
+        echo "Post $postId / target {$target['id']}: error — " . $e->getMessage() . "\n";
     }
+}
 
-    finalizePostIfDone(Post::find((int) $post['id']));
+foreach (array_keys($touchedPostIds) as $postId) {
+    finalizePostIfDone($postId);
 }
 
 flock($lockHandle, LOCK_UN);

@@ -2,27 +2,23 @@
 
 class Post
 {
+    /** title is just the user's own reference label for the dashboard — not published anywhere. */
     public static function create(
         int $userId,
         string $title,
-        string $description,
-        string $tags,
-        string $visibility,
         string $videoPath,
         string $originalName,
         int $sizeBytes,
-        string $scheduledAt,
         ?string $thumbnailPath = null
     ): int {
         $publicToken = bin2hex(random_bytes(24));
         $stmt = Database::get()->prepare(
-            'INSERT INTO posts (user_id, title, description, tags, visibility, video_path, video_original_name,
+            'INSERT INTO posts (user_id, title, video_path, video_original_name,
                 video_size_bytes, thumbnail_path, public_token, status, scheduled_at)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "scheduled", ?)'
+             VALUES (?, ?, ?, ?, ?, ?, ?, "scheduled", NOW())'
         );
         $stmt->execute([
-            $userId, $title, $description, $tags, $visibility, $videoPath, $originalName,
-            $sizeBytes, $thumbnailPath, $publicToken, $scheduledAt,
+            $userId, $title, $videoPath, $originalName, $sizeBytes, $thumbnailPath, $publicToken,
         ]);
         return (int) Database::get()->lastInsertId();
     }
@@ -47,17 +43,6 @@ class Post
     {
         $stmt = Database::get()->prepare('SELECT * FROM posts WHERE user_id = ? ORDER BY created_at DESC');
         $stmt->execute([$userId]);
-        return $stmt->fetchAll();
-    }
-
-    /** Posts due for publishing: scheduled time has passed and there's still a video file to send. */
-    public static function due(): array
-    {
-        $stmt = Database::get()->prepare(
-            "SELECT * FROM posts WHERE status IN ('scheduled','processing') AND scheduled_at <= NOW()
-             AND video_path IS NOT NULL ORDER BY scheduled_at ASC LIMIT 20"
-        );
-        $stmt->execute();
         return $stmt->fetchAll();
     }
 
@@ -121,41 +106,5 @@ class Post
         $stmt->execute([$id, $userId]);
         $row = $stmt->fetch();
         return $row ?: null;
-    }
-
-    /**
-     * Cancels a post that hasn't been picked up by the cron worker yet, deleting its video
-     * file immediately. Guarded to status=scheduled with scheduled_at still in the future so
-     * it can never race with cron/publish.php, which only claims posts whose time has passed.
-     */
-    public static function cancelIfPending(int $id, int $userId): bool
-    {
-        $post = self::findForUser($id, $userId);
-        if (!$post || $post['status'] !== 'scheduled' || strtotime($post['scheduled_at']) <= time()) {
-            return false;
-        }
-        if ($post['video_path'] && is_file($post['video_path'])) {
-            @unlink($post['video_path']);
-        }
-        if ($post['thumbnail_path'] && is_file($post['thumbnail_path'])) {
-            @unlink($post['thumbnail_path']);
-        }
-        $stmt = Database::get()->prepare('DELETE FROM posts WHERE id = ? AND user_id = ?');
-        $stmt->execute([$id, $userId]);
-        return true;
-    }
-
-    public static function rescheduleIfPending(int $id, int $userId, string $newScheduledAt): bool
-    {
-        $post = self::findForUser($id, $userId);
-        if (!$post || $post['status'] !== 'scheduled' || strtotime($post['scheduled_at']) <= time()) {
-            return false;
-        }
-        if (strtotime($newScheduledAt) <= time()) {
-            return false;
-        }
-        $stmt = Database::get()->prepare('UPDATE posts SET scheduled_at = ? WHERE id = ? AND user_id = ?');
-        $stmt->execute([$newScheduledAt, $id, $userId]);
-        return true;
     }
 }
