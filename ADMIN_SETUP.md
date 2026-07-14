@@ -21,6 +21,7 @@
 | Redirect URI ليوتيوب | `https://your-domain.com/oauth/youtube_callback.php` |
 | Redirect URI لتيك توك | `https://your-domain.com/oauth/tiktok_callback.php` |
 | Redirect URI لانستجرام | `https://your-domain.com/oauth/instagram_callback.php` |
+| Redirect URI لتسجيل الدخول بجوجل (اختياري) | `https://your-domain.com/oauth/google_login_callback.php` |
 | Privacy Policy URL | `https://your-domain.com/privacy.php` |
 | Terms of Service URL | `https://your-domain.com/terms.php` |
 | Data Deletion URL | `https://your-domain.com/data-deletion.php` |
@@ -43,7 +44,9 @@
    - Test users: أضف إيميلات جوجل بتاعة عملائك (لحد ما التطبيق ياخد موافقة، أي حد مش مضاف هنا مش هيقدر يربط حسابه)
 5. **APIs & Services → Credentials → Create Credentials → OAuth Client ID**:
    - النوع: **Web application**
-   - Authorized redirect URIs: حط رابط `oauth/youtube_callback.php` من الجدول فوق
+   - Authorized redirect URIs: حط رابط `oauth/youtube_callback.php` من الجدول فوق — ولو عايز تفعّل
+     "تسجيل الدخول بجوجل" في `login.php`/`register.php` (بيستخدم نفس الـ Client ده)، ضيف كمان رابط
+     `oauth/google_login_callback.php` كـ Authorized redirect URI تاني لنفس الـ Client
    - انسخ **Client ID** و **Client Secret** — دول اللي هتحطهم في `app/config/config.local.php` تحت `youtube`
 
 ### النشر لعملاء حقيقيين (مش بس Test Users)
