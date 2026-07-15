@@ -71,6 +71,7 @@ $unreadNotifications = $loggedIn ? Notification::unreadCountForUser(Auth::id()) 
 <div class="nav">
     <a href="index.php"><strong><?= $brandHtml ?></strong></a>
     <div>
+        <a href="keywords.php"><?= t('nav.keywords') ?></a>
         <a href="pricing.php"><?= t('nav.pricing') ?></a>
         <a href="login.php"><?= t('nav.login') ?></a>
         <a href="register.php"><?= t('nav.register') ?></a>

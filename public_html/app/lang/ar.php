@@ -531,4 +531,23 @@ return [
     'keywords.methodology' => 'إزاي بنحسب: الطلب النسبي جاي من اقتراحات البحث الحقيقية (Google/YouTube Autocomplete) — كل ما الكلمة تظهر بدري وفي صيغ أكتر، الطلب أعلى. المنافسة = عدد الفيديوهات اللي بتنافس على نفس الكلمة في بحث يوتيوب. أحسن فرصة: طلب عالي + منافسة قليلة.',
     'keywords.err_seed_required' => 'اكتب موضوع أو كلمة أساسية (حرفين على الأقل).',
     'keywords.err_no_results' => 'ملقناش اقتراحات للكلمة دي — جرب صيغة تانية أو كلمة أعم.',
+
+    // keyword tool: guest access + plan limits
+    'keywords.guest_banner' => 'بتستخدم الأداة كزائر: بحث واحد مجاني في اليوم بأول %d كلمات. ',
+    'keywords.guest_banner_cta' => 'سجّل مجانًا للمزيد',
+    'keywords.guest_results_note' => 'دي أول %d كلمات بس — سجّل عشان تشوف القايمة كاملة وأرقام المنافسة الحقيقية على يوتيوب.',
+    'keywords.usage_today' => 'استخدمت %d من %d عمليات بحث المتاحة النهارده حسب باقتك.',
+    'keywords.alert_register_title' => 'خلصت رصيد الزائر المجاني 🎯',
+    'keywords.alert_register_body' => 'كزائر ليك بحث واحد مجاني في اليوم بأول %d كلمات. سجّل حساب مجاني وهتقدر تبحث أكتر وتشوف القايمة كاملة بأرقام المنافسة الحقيقية.',
+    'keywords.alert_register_cta' => 'سجّل حساب مجاني',
+    'keywords.alert_upgrade_title' => 'وصلت لحد باقتك النهارده 🚀',
+    'keywords.alert_upgrade_body' => 'باقتك الحالية بتسمح بـ %d عمليات بحث في اليوم. رقّي باقتك عشان تزود الحد أو تخليه مفتوح.',
+    'keywords.alert_upgrade_cta' => 'شوف الباقات',
+
+    // admin: plan keyword limit field
+    'admin.plan_keyword_searches_label' => 'عمليات بحث الكلمات المفتاحية / يوم',
+    'admin.plan_keyword_searches_hint' => 'سيبها فاضية = عدد غير محدود.',
+
+    // upload previews
+    'upload.video_preview_label' => 'معاينة الفيديو (قبل الرفع)',
 ];

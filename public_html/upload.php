@@ -189,11 +189,21 @@ require __DIR__ . '/partials_header.php';
     <input type="text" name="title" value="<?= htmlspecialchars($postedTitle) ?>" required>
 
     <label><?= t('upload.video_file_label') ?></label>
-    <input type="file" name="video" accept="video/mp4,video/quicktime" required>
+    <input type="file" name="video" id="videoInput" accept="video/mp4,video/quicktime" required>
+
+    <div id="videoPreviewWrap" style="display:none;margin-top:12px;">
+        <label><?= t('upload.video_preview_label') ?></label>
+        <video id="videoPreview" controls playsinline preload="metadata" style="width:100%;max-height:380px;border-radius:12px;background:#000;border:1px solid var(--border);"></video>
+        <p class="muted" id="videoPreviewMeta" style="margin:6px 0 0;font-size:13px;"></p>
+    </div>
 
     <label><?= t('upload.thumbnail_label') ?></label>
-    <input type="file" name="thumbnail" accept="image/jpeg,image/png">
+    <input type="file" name="thumbnail" id="thumbnailInput" accept="image/jpeg,image/png">
     <p class="muted"><?= t('upload.thumbnail_note') ?></p>
+
+    <div id="thumbPreviewWrap" style="display:none;margin-top:8px;">
+        <img id="thumbPreview" alt="" style="max-width:220px;max-height:140px;border-radius:10px;border:1px solid var(--border);object-fit:cover;">
+    </div>
 
     <label><?= t('upload.publish_to_label') ?></label>
     <div class="checks">

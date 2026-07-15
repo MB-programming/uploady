@@ -531,4 +531,23 @@ return [
     'keywords.methodology' => 'How it works: relative demand comes from real search suggestions (Google/YouTube Autocomplete) — the earlier and more often a phrase appears, the higher the demand. Competition = how many videos compete for that phrase in YouTube search. Best opportunity: high demand + low competition.',
     'keywords.err_seed_required' => 'Enter a topic or seed keyword (at least 2 characters).',
     'keywords.err_no_results' => 'No suggestions found for that phrase — try a different wording or a broader topic.',
+
+    // keyword tool: guest access + plan limits
+    'keywords.guest_banner' => 'You are using the tool as a guest: one free search per day with the top %d keywords. ',
+    'keywords.guest_banner_cta' => 'Register free for more',
+    'keywords.guest_results_note' => 'These are only the top %d keywords — register to see the full list plus real YouTube competition numbers.',
+    'keywords.usage_today' => 'You have used %d of the %d daily searches included in your plan.',
+    'keywords.alert_register_title' => 'Your free guest quota is used up 🎯',
+    'keywords.alert_register_body' => 'As a guest you get one free search per day with the top %d keywords. Create a free account to search more and unlock the full list with real competition numbers.',
+    'keywords.alert_register_cta' => 'Create a free account',
+    'keywords.alert_upgrade_title' => 'You reached today\'s plan limit 🚀',
+    'keywords.alert_upgrade_body' => 'Your current plan allows %d searches per day. Upgrade to raise the limit or make it unlimited.',
+    'keywords.alert_upgrade_cta' => 'View plans',
+
+    // admin: plan keyword limit field
+    'admin.plan_keyword_searches_label' => 'Keyword searches / day',
+    'admin.plan_keyword_searches_hint' => 'Leave empty = unlimited.',
+
+    // upload previews
+    'upload.video_preview_label' => 'Video preview (before upload)',
 ];
