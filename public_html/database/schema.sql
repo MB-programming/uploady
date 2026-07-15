@@ -212,6 +212,18 @@ CREATE TABLE IF NOT EXISTS keyword_search_logs (
     KEY idx_kw_logs_ip (ip_address, created_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- Lightweight page-view tracking for the admin "Website Reports" page (admin_reports.php).
+-- One row per rendered page view (GET, non-admin, non-bot), recorded from partials_header.
+CREATE TABLE IF NOT EXISTS page_visits (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    path VARCHAR(190) NOT NULL,
+    ip_address VARCHAR(45) NOT NULL,
+    user_id INT UNSIGNED NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    KEY idx_visits_date (created_at),
+    KEY idx_visits_path (path, created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 INSERT INTO plans (name, price_egp, storage_quota_gb, max_social_accounts, keyword_searches_per_day, features, badge_text, is_featured, sort_order) VALUES
     ('الأساسية', 299.00, 10, 3, 10, '10 GB مساحة تخزين\nحساب واحد لكل منصة (يوتيوب / تيك توك / انستجرام)\nنشر فوري أو مجدول\nحذف الفيديو تلقائي بعد النشر', NULL, 0, 1),
     ('الاحترافية', 750.00, 50, 10, 30, '50 GB مساحة تخزين\nحسابات متعددة على كل منصة\nصورة مصغرة مخصصة (يوتيوب)\nدعم فني بأولوية', 'الأكثر طلبًا', 1, 2),

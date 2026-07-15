@@ -550,4 +550,22 @@ return [
 
     // upload previews
     'upload.video_preview_label' => 'Video preview (before upload)',
+
+    // website reports (admin)
+    'nav.admin_reports' => 'Website Reports',
+    'sitereports.title' => 'Website Reports',
+    'sitereports.intro' => 'Real site traffic (excluding admin visits and search-engine bots) — data starts collecting the moment this update goes live.',
+    'sitereports.views_today' => 'Views today',
+    'sitereports.views_7' => 'Views — last 7 days',
+    'sitereports.views_30' => 'Views — last 30 days',
+    'sitereports.uniques_inline' => '%s unique visitors',
+    'sitereports.total_users' => 'Total registered clients',
+    'sitereports.total_videos' => 'Total videos uploaded',
+    'sitereports.chart_title' => 'Daily visits — last 30 days',
+    'sitereports.chart_hint' => 'Hover any bar to see the date and its views / unique visitors.',
+    'sitereports.top_pages' => 'Most visited pages (last 30 days)',
+    'sitereports.no_data' => 'No data yet — stats start collecting from the first visit after this update.',
+    'sitereports.col_page' => 'Page',
+    'sitereports.col_views' => 'Views',
+    'sitereports.col_uniques' => 'Unique visitors',
 ];

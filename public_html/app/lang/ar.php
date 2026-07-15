@@ -550,4 +550,22 @@ return [
 
     // upload previews
     'upload.video_preview_label' => 'معاينة الفيديو (قبل الرفع)',
+
+    // website reports (admin)
+    'nav.admin_reports' => 'تقارير الموقع',
+    'sitereports.title' => 'تقارير الموقع',
+    'sitereports.intro' => 'زيارات الموقع الفعلية (بدون زيارات الأدمن وبوتات محركات البحث) — البيانات بتتجمع تلقائيًا من لحظة تفعيل التحديث ده.',
+    'sitereports.views_today' => 'مشاهدات النهارده',
+    'sitereports.views_7' => 'مشاهدات آخر 7 أيام',
+    'sitereports.views_30' => 'مشاهدات آخر 30 يوم',
+    'sitereports.uniques_inline' => '%s زائر فريد',
+    'sitereports.total_users' => 'إجمالي العملاء المسجلين',
+    'sitereports.total_videos' => 'إجمالي الفيديوهات المرفوعة',
+    'sitereports.chart_title' => 'الزيارات اليومية — آخر 30 يوم',
+    'sitereports.chart_hint' => 'مرر الماوس على أي عمود تشوف التاريخ وعدد المشاهدات / الزوار الفريدين.',
+    'sitereports.top_pages' => 'أكتر الصفحات زيارة (آخر 30 يوم)',
+    'sitereports.no_data' => 'مفيش بيانات لسه — الإحصائيات بتبدأ تتجمع من أول زيارة بعد التحديث.',
+    'sitereports.col_page' => 'الصفحة',
+    'sitereports.col_views' => 'المشاهدات',
+    'sitereports.col_uniques' => 'زوار فريدين',
 ];
