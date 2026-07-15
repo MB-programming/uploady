@@ -17,6 +17,7 @@ CREATE TABLE IF NOT EXISTS plans (
     price_egp DECIMAL(10,2) NOT NULL,
     storage_quota_gb INT UNSIGNED NOT NULL,
     max_social_accounts INT UNSIGNED NULL, -- NULL = unlimited; informational only, not enforced yet
+    keyword_searches_per_day INT UNSIGNED NULL, -- daily quota for keywords.php; NULL = unlimited
     features TEXT NULL, -- one feature bullet per line, shown on the public pricing page
     badge_text VARCHAR(60) NULL, -- optional ribbon text (e.g. "Most Popular"); NULL = no ribbon
     is_featured TINYINT(1) NOT NULL DEFAULT 0, -- highlights the card on the pricing page
@@ -199,8 +200,20 @@ CREATE TABLE IF NOT EXISTS auto_reply_events (
     CONSTRAINT fk_auto_reply_events_rule FOREIGN KEY (rule_id) REFERENCES auto_reply_rules(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-INSERT INTO plans (name, price_egp, storage_quota_gb, max_social_accounts, features, badge_text, is_featured, sort_order) VALUES
-    ('الأساسية', 299.00, 10, 3, '10 GB مساحة تخزين\nحساب واحد لكل منصة (يوتيوب / تيك توك / انستجرام)\nنشر فوري أو مجدول\nحذف الفيديو تلقائي بعد النشر', NULL, 0, 1),
-    ('الاحترافية', 750.00, 50, 10, '50 GB مساحة تخزين\nحسابات متعددة على كل منصة\nصورة مصغرة مخصصة (يوتيوب)\nدعم فني بأولوية', 'الأكثر طلبًا', 1, 2),
-    ('الأعمال', 1500.00, 200, NULL, '200 GB مساحة تخزين\nعدد غير محدود من الحسابات\nلوحة تقارير موسعة\nمدير حساب مخصص', NULL, 0, 3)
+-- Rate limiting for the keyword research tool: one row per generation. Guests are counted
+-- by IP address (user_id NULL); logged-in users by user_id against their plan's daily quota.
+CREATE TABLE IF NOT EXISTS keyword_search_logs (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    user_id INT UNSIGNED NULL,
+    ip_address VARCHAR(45) NOT NULL,
+    seed VARCHAR(190) NOT NULL DEFAULT '',
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    KEY idx_kw_logs_user (user_id, created_at),
+    KEY idx_kw_logs_ip (ip_address, created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+INSERT INTO plans (name, price_egp, storage_quota_gb, max_social_accounts, keyword_searches_per_day, features, badge_text, is_featured, sort_order) VALUES
+    ('الأساسية', 299.00, 10, 3, 10, '10 GB مساحة تخزين\nحساب واحد لكل منصة (يوتيوب / تيك توك / انستجرام)\nنشر فوري أو مجدول\nحذف الفيديو تلقائي بعد النشر', NULL, 0, 1),
+    ('الاحترافية', 750.00, 50, 10, 30, '50 GB مساحة تخزين\nحسابات متعددة على كل منصة\nصورة مصغرة مخصصة (يوتيوب)\nدعم فني بأولوية', 'الأكثر طلبًا', 1, 2),
+    ('الأعمال', 1500.00, 200, NULL, NULL, '200 GB مساحة تخزين\nعدد غير محدود من الحسابات\nلوحة تقارير موسعة\nمدير حساب مخصص', NULL, 0, 3)
 ON DUPLICATE KEY UPDATE name = VALUES(name);

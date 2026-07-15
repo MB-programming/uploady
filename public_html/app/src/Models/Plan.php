@@ -35,6 +35,21 @@ class Plan
         return (float) App::config('storage_quota_gb');
     }
 
+    /**
+     * Daily keyword-tool searches allowed for a user: their plan's quota, NULL = unlimited.
+     * Users without a plan get a small default so the tool stays usable but nudges upgrading.
+     */
+    public static function keywordSearchesPerDayForUser(array $user): ?int
+    {
+        if (!empty($user['plan_id'])) {
+            $plan = self::find((int) $user['plan_id']);
+            if ($plan) {
+                return $plan['keyword_searches_per_day'] !== null ? (int) $plan['keyword_searches_per_day'] : null;
+            }
+        }
+        return 5; // no plan assigned yet
+    }
+
     /** Splits the stored newline-separated features text into a clean list for display. */
     public static function featuresList(?string $features): array
     {
@@ -47,14 +62,15 @@ class Plan
     public static function create(array $data): int
     {
         $stmt = Database::get()->prepare(
-            'INSERT INTO plans (name, price_egp, storage_quota_gb, max_social_accounts, features, badge_text, is_featured, is_active, sort_order)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'
+            'INSERT INTO plans (name, price_egp, storage_quota_gb, max_social_accounts, keyword_searches_per_day, features, badge_text, is_featured, is_active, sort_order)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
         );
         $stmt->execute([
             $data['name'],
             $data['price_egp'],
             $data['storage_quota_gb'],
             $data['max_social_accounts'],
+            $data['keyword_searches_per_day'],
             $data['features'],
             $data['badge_text'],
             $data['is_featured'] ? 1 : 0,
@@ -68,7 +84,7 @@ class Plan
     {
         $stmt = Database::get()->prepare(
             'UPDATE plans SET name = ?, price_egp = ?, storage_quota_gb = ?, max_social_accounts = ?,
-                features = ?, badge_text = ?, is_featured = ?, is_active = ?, sort_order = ?
+                keyword_searches_per_day = ?, features = ?, badge_text = ?, is_featured = ?, is_active = ?, sort_order = ?
              WHERE id = ?'
         );
         $stmt->execute([
@@ -76,6 +92,7 @@ class Plan
             $data['price_egp'],
             $data['storage_quota_gb'],
             $data['max_social_accounts'],
+            $data['keyword_searches_per_day'],
             $data['features'],
             $data['badge_text'],
             $data['is_featured'] ? 1 : 0,

@@ -431,3 +431,29 @@ html[dir="ltr"] .sidebar-toggle { right: auto; left: 14px; }
     html[dir="ltr"] .sidebar { right: auto; left: 0; transform: translateX(-100%); }
     html[dir="ltr"] .sidebar.is-open { transform: translateX(0); }
 }
+
+/* ---- Sweet alert (limit modals on keywords.php) ---- */
+.sweet-overlay {
+    position: fixed; inset: 0; z-index: 1000;
+    background: rgba(3, 5, 10, .72);
+    backdrop-filter: blur(4px);
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px;
+    animation: sweetFade .25s ease;
+}
+.sweet-box {
+    background: linear-gradient(180deg, var(--card-from) 0%, var(--card-to) 100%);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 34px 30px 28px;
+    max-width: 420px; width: 100%;
+    text-align: center;
+    box-shadow: 0 30px 80px -20px rgba(0,0,0,.7);
+    animation: sweetPop .3s cubic-bezier(.34,1.56,.64,1);
+}
+.sweet-icon { font-size: 44px; line-height: 1; margin-bottom: 14px; }
+.sweet-box h3 { margin: 0 0 10px; font-size: 20px; }
+.sweet-box p { margin: 0 0 22px; color: rgba(255,255,255,.75); font-size: 14px; line-height: 1.7; }
+.sweet-box .btn { display: inline-block; margin: 0 5px 8px; }
+@keyframes sweetFade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes sweetPop { from { opacity: 0; transform: scale(.85) translateY(12px); } to { opacity: 1; transform: scale(1) translateY(0); } }

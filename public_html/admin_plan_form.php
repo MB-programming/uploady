@@ -14,6 +14,7 @@ $name = $editingPlan['name'] ?? '';
 $price = $editingPlan['price_egp'] ?? '';
 $quota = $editingPlan['storage_quota_gb'] ?? '';
 $maxAccounts = $editingPlan['max_social_accounts'] ?? '';
+$keywordSearches = $editingPlan['keyword_searches_per_day'] ?? '';
 $features = $editingPlan['features'] ?? '';
 $badgeText = $editingPlan['badge_text'] ?? '';
 $isFeatured = (bool) ($editingPlan['is_featured'] ?? false);
@@ -27,6 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $price = (string) ($_POST['price_egp'] ?? '');
     $quota = (string) ($_POST['storage_quota_gb'] ?? '');
     $maxAccounts = trim((string) ($_POST['max_social_accounts'] ?? ''));
+    $keywordSearches = trim((string) ($_POST['keyword_searches_per_day'] ?? ''));
     $features = trim((string) ($_POST['features'] ?? ''));
     $badgeText = trim((string) ($_POST['badge_text'] ?? ''));
     $isFeatured = !empty($_POST['is_featured']);
@@ -43,6 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'price_egp' => (float) $price,
             'storage_quota_gb' => (int) $quota,
             'max_social_accounts' => $maxAccounts !== '' ? (int) $maxAccounts : null,
+            'keyword_searches_per_day' => $keywordSearches !== '' ? (int) $keywordSearches : null,
             'features' => $features !== '' ? $features : null,
             'badge_text' => $badgeText !== '' ? $badgeText : null,
             'is_featured' => $isFeatured,
@@ -85,6 +88,10 @@ require __DIR__ . '/partials_header.php';
 
     <label><?= t('admin.plan_max_accounts_label') ?></label>
     <input type="text" name="max_social_accounts" value="<?= htmlspecialchars((string) $maxAccounts) ?>">
+
+    <label><?= t('admin.plan_keyword_searches_label') ?></label>
+    <input type="text" name="keyword_searches_per_day" value="<?= htmlspecialchars((string) $keywordSearches) ?>">
+    <p class="muted" style="margin:4px 0 0;font-size:13px;"><?= t('admin.plan_keyword_searches_hint') ?></p>
 
     <label><?= t('admin.plan_features_label') ?></label>
     <textarea name="features" rows="5"><?= htmlspecialchars((string) $features) ?></textarea>

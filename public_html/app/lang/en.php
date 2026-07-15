@@ -505,4 +505,49 @@ return [
     'autoreply.pause' => 'Pause',
     'autoreply.resume' => 'Resume',
     'autoreply.delete_confirm' => 'Permanently delete this auto-reply rule?',
+
+    // keyword & hashtag research
+    'nav.keywords' => 'Keywords',
+    'keywords.title' => 'Keyword & Hashtag Generator',
+    'keywords.intro' => 'Type your video topic and we\'ll pull the phrases people actually search for (from real search suggestions), with ready-to-copy hashtags and a YouTube competition estimate.',
+    'keywords.seed_label' => 'Video topic / seed keyword',
+    'keywords.seed_placeholder' => 'e.g. keto recipes, phone photography, digital marketing',
+    'keywords.generate' => 'Generate Keywords',
+    'keywords.results_title' => 'Results for "%s"',
+    'keywords.col_keyword' => 'Keyword',
+    'keywords.col_hashtag' => 'Hashtag',
+    'keywords.col_demand' => 'Relative demand',
+    'keywords.col_competition' => 'Competition (YouTube)',
+    'keywords.level_low' => 'Low competition',
+    'keywords.level_medium' => 'Medium competition',
+    'keywords.level_high' => 'High competition',
+    'keywords.videos_count' => '~%s competing videos',
+    'keywords.copy' => 'Copy',
+    'keywords.copied' => 'Copied ✓',
+    'keywords.copy_keywords_label' => 'All keywords (for description & tags)',
+    'keywords.copy_hashtags_label' => 'All hashtags',
+    'keywords.connect_youtube_hint' => 'Connect a YouTube channel from the Accounts page to see the real number of competing videos per keyword.',
+    'keywords.no_competition_platform' => 'TikTok and Instagram don\'t expose competition numbers via a free API — the "relative demand" score is computed from real search suggestions and applies to both platforms.',
+    'keywords.methodology' => 'How it works: relative demand comes from real search suggestions (Google/YouTube Autocomplete) — the earlier and more often a phrase appears, the higher the demand. Competition = how many videos compete for that phrase in YouTube search. Best opportunity: high demand + low competition.',
+    'keywords.err_seed_required' => 'Enter a topic or seed keyword (at least 2 characters).',
+    'keywords.err_no_results' => 'No suggestions found for that phrase — try a different wording or a broader topic.',
+
+    // keyword tool: guest access + plan limits
+    'keywords.guest_banner' => 'You are using the tool as a guest: one free search per day with the top %d keywords. ',
+    'keywords.guest_banner_cta' => 'Register free for more',
+    'keywords.guest_results_note' => 'These are only the top %d keywords — register to see the full list plus real YouTube competition numbers.',
+    'keywords.usage_today' => 'You have used %d of the %d daily searches included in your plan.',
+    'keywords.alert_register_title' => 'Your free guest quota is used up 🎯',
+    'keywords.alert_register_body' => 'As a guest you get one free search per day with the top %d keywords. Create a free account to search more and unlock the full list with real competition numbers.',
+    'keywords.alert_register_cta' => 'Create a free account',
+    'keywords.alert_upgrade_title' => 'You reached today\'s plan limit 🚀',
+    'keywords.alert_upgrade_body' => 'Your current plan allows %d searches per day. Upgrade to raise the limit or make it unlimited.',
+    'keywords.alert_upgrade_cta' => 'View plans',
+
+    // admin: plan keyword limit field
+    'admin.plan_keyword_searches_label' => 'Keyword searches / day',
+    'admin.plan_keyword_searches_hint' => 'Leave empty = unlimited.',
+
+    // upload previews
+    'upload.video_preview_label' => 'Video preview (before upload)',
 ];

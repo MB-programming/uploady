@@ -505,4 +505,49 @@ return [
     'autoreply.pause' => 'إيقاف مؤقت',
     'autoreply.resume' => 'تشغيل',
     'autoreply.delete_confirm' => 'حذف قاعدة الرد التلقائي دي نهائيًا؟',
+
+    // keyword & hashtag research
+    'nav.keywords' => 'الكلمات المفتاحية',
+    'keywords.title' => 'توليد كلمات مفتاحية وهاشتاجات',
+    'keywords.intro' => 'اكتب موضوع الفيديو، وهنجيبلك الكلمات اللي الناس بتدور بيها فعلاً (من اقتراحات البحث الحقيقية)، مع هاشتاجات جاهزة للنسخ وتقدير للمنافسة على يوتيوب.',
+    'keywords.seed_label' => 'موضوع الفيديو / الكلمة الأساسية',
+    'keywords.seed_placeholder' => 'مثال: وصفات كيتو، تصوير موبايل، تسويق الكتروني',
+    'keywords.generate' => 'ولّد الكلمات',
+    'keywords.results_title' => 'نتائج "%s"',
+    'keywords.col_keyword' => 'الكلمة المفتاحية',
+    'keywords.col_hashtag' => 'الهاشتاج',
+    'keywords.col_demand' => 'الطلب النسبي',
+    'keywords.col_competition' => 'المنافسة (يوتيوب)',
+    'keywords.level_low' => 'منافسة قليلة',
+    'keywords.level_medium' => 'منافسة متوسطة',
+    'keywords.level_high' => 'منافسة عالية',
+    'keywords.videos_count' => '~%s فيديو منافس',
+    'keywords.copy' => 'نسخ',
+    'keywords.copied' => 'اتنسخ ✓',
+    'keywords.copy_keywords_label' => 'كل الكلمات (للوصف والتاجز)',
+    'keywords.copy_hashtags_label' => 'كل الهاشتاجات',
+    'keywords.connect_youtube_hint' => 'اربط قناة يوتيوب من صفحة الحسابات عشان يظهرلك عدد الفيديوهات المنافسة الحقيقي لكل كلمة.',
+    'keywords.no_competition_platform' => 'تيك توك وانستجرام مش بيوفروا أرقام منافسة عبر API مجاني — درجة "الطلب النسبي" محسوبة من اقتراحات البحث الحقيقية وبتنفع للمنصتين.',
+    'keywords.methodology' => 'إزاي بنحسب: الطلب النسبي جاي من اقتراحات البحث الحقيقية (Google/YouTube Autocomplete) — كل ما الكلمة تظهر بدري وفي صيغ أكتر، الطلب أعلى. المنافسة = عدد الفيديوهات اللي بتنافس على نفس الكلمة في بحث يوتيوب. أحسن فرصة: طلب عالي + منافسة قليلة.',
+    'keywords.err_seed_required' => 'اكتب موضوع أو كلمة أساسية (حرفين على الأقل).',
+    'keywords.err_no_results' => 'ملقناش اقتراحات للكلمة دي — جرب صيغة تانية أو كلمة أعم.',
+
+    // keyword tool: guest access + plan limits
+    'keywords.guest_banner' => 'بتستخدم الأداة كزائر: بحث واحد مجاني في اليوم بأول %d كلمات. ',
+    'keywords.guest_banner_cta' => 'سجّل مجانًا للمزيد',
+    'keywords.guest_results_note' => 'دي أول %d كلمات بس — سجّل عشان تشوف القايمة كاملة وأرقام المنافسة الحقيقية على يوتيوب.',
+    'keywords.usage_today' => 'استخدمت %d من %d عمليات بحث المتاحة النهارده حسب باقتك.',
+    'keywords.alert_register_title' => 'خلصت رصيد الزائر المجاني 🎯',
+    'keywords.alert_register_body' => 'كزائر ليك بحث واحد مجاني في اليوم بأول %d كلمات. سجّل حساب مجاني وهتقدر تبحث أكتر وتشوف القايمة كاملة بأرقام المنافسة الحقيقية.',
+    'keywords.alert_register_cta' => 'سجّل حساب مجاني',
+    'keywords.alert_upgrade_title' => 'وصلت لحد باقتك النهارده 🚀',
+    'keywords.alert_upgrade_body' => 'باقتك الحالية بتسمح بـ %d عمليات بحث في اليوم. رقّي باقتك عشان تزود الحد أو تخليه مفتوح.',
+    'keywords.alert_upgrade_cta' => 'شوف الباقات',
+
+    // admin: plan keyword limit field
+    'admin.plan_keyword_searches_label' => 'عمليات بحث الكلمات المفتاحية / يوم',
+    'admin.plan_keyword_searches_hint' => 'سيبها فاضية = عدد غير محدود.',
+
+    // upload previews
+    'upload.video_preview_label' => 'معاينة الفيديو (قبل الرفع)',
 ];
