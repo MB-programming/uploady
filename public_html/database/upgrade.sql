@@ -27,7 +27,17 @@ CREATE TABLE IF NOT EXISTS plans (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 ALTER TABLE users ADD COLUMN IF NOT EXISTS plan_id INT UNSIGNED NULL AFTER is_admin;
-ALTER TABLE users ADD CONSTRAINT IF NOT EXISTS fk_users_plan FOREIGN KEY (plan_id) REFERENCES plans(id) ON DELETE SET NULL;
+
+-- إضافة الـ Foreign Key بس لو مش موجود — عن طريق information_schema، لأن صيغة
+-- "ADD CONSTRAINT IF NOT EXISTS" مش مدعومة في MySQL ولا بالشكل ده في MariaDB.
+SET @fk_exists := (
+    SELECT COUNT(*) FROM information_schema.TABLE_CONSTRAINTS
+    WHERE CONSTRAINT_SCHEMA = DATABASE() AND TABLE_NAME = 'users' AND CONSTRAINT_NAME = 'fk_users_plan'
+);
+SET @ddl := IF(@fk_exists = 0,
+    'ALTER TABLE users ADD CONSTRAINT fk_users_plan FOREIGN KEY (plan_id) REFERENCES plans(id) ON DELETE SET NULL',
+    'SELECT 1');
+PREPARE stmt FROM @ddl; EXECUTE stmt; DEALLOCATE PREPARE stmt;
 
 CREATE TABLE IF NOT EXISTS invoices (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -69,7 +79,16 @@ SET pt.title = p.title,
 WHERE pt.scheduled_at IS NULL;
 
 ALTER TABLE post_targets MODIFY COLUMN scheduled_at DATETIME NOT NULL;
-ALTER TABLE post_targets ADD KEY IF NOT EXISTS idx_targets_due (status, scheduled_at);
+
+-- نفس أسلوب الفحص للإندكس (بدل ADD KEY IF NOT EXISTS اللي مش مدعومة في MySQL).
+SET @idx_exists := (
+    SELECT COUNT(*) FROM information_schema.STATISTICS
+    WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'post_targets' AND INDEX_NAME = 'idx_targets_due'
+);
+SET @ddl := IF(@idx_exists = 0,
+    'ALTER TABLE post_targets ADD KEY idx_targets_due (status, scheduled_at)',
+    'SELECT 1');
+PREPARE stmt FROM @ddl; EXECUTE stmt; DEALLOCATE PREPARE stmt;
 
 -- ---- 004: plan management fields --------------------------------------------
 ALTER TABLE plans
