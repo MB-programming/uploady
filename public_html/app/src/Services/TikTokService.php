@@ -17,6 +17,15 @@ class TikTokService
             return;
         }
 
+        // A previous tick initialized the session but the process was killed (shared-hosting
+        // cron `timeout`) before the file transfer finished. Retry the SAME publish_id/upload
+        // URL instead of init-ing a new one — re-initializing on every tick is what creates
+        // duplicate metadata-only drafts on the platform.
+        if ($session['phase'] === 'uploading') {
+            self::resumeUpload($target, $session);
+            return;
+        }
+
         if ($session['phase'] === 'processing') {
             self::pollStatus($target, $session, $accessToken);
         }
@@ -55,7 +64,34 @@ class TikTokService
             throw new RuntimeException('TikTok publish init failed: ' . $initResponse['body']);
         }
 
-        $uploadResponse = Http::putFile($data['upload_url'], $videoPath, [
+        // Persist the session BEFORE moving any bytes, so a process killed mid-upload resumes
+        // this publish_id on the next tick instead of creating a duplicate one.
+        PostTarget::saveUploadSession($target['id'], [
+            'phase' => 'uploading',
+            'publish_id' => $data['publish_id'],
+            'upload_url' => $data['upload_url'],
+        ]);
+
+        self::uploadFile($target['id'], $videoPath, $data['upload_url'], (string) $data['publish_id']);
+    }
+
+    private static function resumeUpload(array $target, array $session): void
+    {
+        try {
+            self::uploadFile((int) $target['id'], $target['video_path'], $session['upload_url'], (string) $session['publish_id']);
+        } catch (Throwable $e) {
+            // TikTok upload URLs expire after ~1 hour. An expired never-completed upload leaves
+            // nothing visible on TikTok, so clearing the session and re-initializing next tick
+            // is safe — unlike blindly re-initializing on EVERY tick, which piles up drafts.
+            PostTarget::saveUploadSession((int) $target['id'], []);
+            throw $e;
+        }
+    }
+
+    private static function uploadFile(int $targetId, string $videoPath, string $uploadUrl, string $publishId): void
+    {
+        $fileSize = filesize($videoPath);
+        $uploadResponse = Http::putFile($uploadUrl, $videoPath, [
             'Content-Type' => 'video/mp4',
             'Content-Range' => "bytes 0-" . ($fileSize - 1) . "/$fileSize",
         ]);
@@ -64,9 +100,9 @@ class TikTokService
             throw new RuntimeException('TikTok video upload failed: ' . $uploadResponse['body']);
         }
 
-        PostTarget::saveUploadSession($target['id'], [
+        PostTarget::saveUploadSession($targetId, [
             'phase' => 'processing',
-            'publish_id' => $data['publish_id'],
+            'publish_id' => $publishId,
         ]);
     }
 
