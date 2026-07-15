@@ -166,3 +166,14 @@ CREATE TABLE IF NOT EXISTS keyword_search_logs (
 
 UPDATE plans SET keyword_searches_per_day = 10 WHERE name = 'الأساسية' AND keyword_searches_per_day IS NULL;
 UPDATE plans SET keyword_searches_per_day = 30 WHERE name = 'الاحترافية' AND keyword_searches_per_day IS NULL;
+
+-- ---- 010: page visits (website reports) ----------------------------------------
+CREATE TABLE IF NOT EXISTS page_visits (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    path VARCHAR(190) NOT NULL,
+    ip_address VARCHAR(45) NOT NULL,
+    user_id INT UNSIGNED NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    KEY idx_visits_date (created_at),
+    KEY idx_visits_path (path, created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

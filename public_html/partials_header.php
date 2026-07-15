@@ -2,6 +2,18 @@
 /** @var string $pageTitle */
 $loggedIn = Auth::check();
 $currentScript = basename($_SERVER['SCRIPT_NAME']);
+
+// Website Reports tracking: count rendered GET page views only (this file is only included by
+// real pages, never by action endpoints/cron/media). Admin browsing and obvious bots are
+// skipped so the numbers reflect actual visitors.
+$visitorUa = $_SERVER['HTTP_USER_AGENT'] ?? '';
+if (
+    ($_SERVER['REQUEST_METHOD'] ?? '') === 'GET'
+    && !($loggedIn && Auth::isAdmin())
+    && !preg_match('/bot|crawl|spider|slurp|curl|wget|facebookexternalhit|preview/i', $visitorUa)
+) {
+    PageVisit::record($currentScript, (string) ($_SERVER['REMOTE_ADDR'] ?? ''), $loggedIn ? Auth::id() : null);
+}
 $isActive = fn (string ...$scripts): string => in_array($currentScript, $scripts, true) ? ' is-active' : '';
 $otherLang = Lang::locale() === 'en' ? 'ar' : 'en';
 $langToggleHref = 'lang.php?set=' . $otherLang;
@@ -55,6 +67,7 @@ $unreadNotifications = $loggedIn ? Notification::unreadCountForUser(Auth::id()) 
             <?php if (Auth::isAdmin()): ?>
                 <div class="sidebar-section"><?= t('nav.admin_section') ?></div>
                 <a href="admin.php" class="sidebar-link<?= $isActive('admin.php', 'admin_client.php') ?>"><?= Icons::shield() ?> <?= t('nav.admin_dashboard') ?></a>
+                <a href="admin_reports.php" class="sidebar-link<?= $isActive('admin_reports.php') ?>"><?= Icons::trendUp() ?> <?= t('nav.admin_reports') ?></a>
                 <a href="admin_users.php" class="sidebar-link<?= $isActive('admin_users.php', 'admin_user_form.php') ?>"><?= Icons::users() ?> <?= t('nav.admin_users') ?></a>
                 <a href="admin_plans.php" class="sidebar-link<?= $isActive('admin_plans.php', 'admin_plan_form.php') ?>"><?= Icons::package() ?> <?= t('nav.admin_plans') ?></a>
                 <a href="admin_invoices.php" class="sidebar-link<?= $isActive('admin_invoices.php', 'admin_invoice_form.php') ?>"><?= Icons::receipt() ?> <?= t('nav.admin_invoices') ?></a>

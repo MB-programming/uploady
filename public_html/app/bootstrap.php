@@ -29,6 +29,10 @@ if (!headers_sent()) {
     // blob: in img/media powers the client-side video/thumbnail preview on upload.php
     // (object URLs of local files — nothing external is loaded).
     header("Content-Security-Policy: default-src 'self'; img-src 'self' data: blob:; media-src 'self' blob:; style-src 'self' 'unsafe-inline'; script-src 'self'; frame-ancestors 'none';");
+    header('Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()');
+    if (!empty($_SERVER['HTTPS'])) {
+        header('Strict-Transport-Security: max-age=31536000; includeSubDomains');
+    }
 }
 
 if (session_status() === PHP_SESSION_NONE) {
