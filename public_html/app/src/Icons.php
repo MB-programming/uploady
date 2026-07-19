@@ -19,6 +19,11 @@ class Icons
         return self::svg('<path d="M9 17H7A5 5 0 0 1 7 7h2"/><path d="M15 7h2a5 5 0 1 1 0 10h-2"/><path d="M8 12h8"/>', $class);
     }
 
+    public static function sparkles(string $class = ''): string
+    {
+        return self::svg('<path d="M12 3l1.9 4.6L18.5 9.5l-4.6 1.9L12 16l-1.9-4.6L5.5 9.5l4.6-1.9z"/><path d="M18.5 15l.9 2.1 2.1.9-2.1.9-.9 2.1-.9-2.1-2.1-.9 2.1-.9z"/>', $class);
+    }
+
     public static function search(string $class = ''): string
     {
         return self::svg('<circle cx="11" cy="11" r="7"/><path d="M16.5 16.5L21 21"/>', $class);
