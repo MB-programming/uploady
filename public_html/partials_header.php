@@ -57,6 +57,7 @@ $unreadNotifications = $loggedIn ? Notification::unreadCountForUser(Auth::id()) 
             <a href="accounts.php" class="sidebar-link<?= $isActive('accounts.php') ?>"><?= Icons::link() ?> <?= t('nav.accounts') ?></a>
             <a href="auto_replies.php" class="sidebar-link<?= $isActive('auto_replies.php') ?>"><?= Icons::chat() ?> <?= t('nav.auto_replies') ?></a>
             <a href="keywords.php" class="sidebar-link<?= $isActive('keywords.php') ?>"><?= Icons::search() ?> <?= t('nav.keywords') ?></a>
+            <a href="script_chat.php" class="sidebar-link<?= $isActive('script_chat.php') ?>"><?= Icons::sparkles() ?> <?= t('nav.script_chat') ?></a>
             <a href="reports.php" class="sidebar-link<?= $isActive('reports.php', 'invoices.php', 'invoice_view.php') ?>"><?= Icons::barChart() ?> <?= t('nav.reports') ?></a>
             <a href="pricing.php" class="sidebar-link<?= $isActive('pricing.php') ?>"><?= Icons::tag() ?> <?= t('nav.pricing') ?></a>
             <a href="notifications.php" class="sidebar-link<?= $isActive('notifications.php') ?>">

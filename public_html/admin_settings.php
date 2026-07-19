@@ -100,6 +100,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
+    if ($section === 'ai') {
+        $newKey = trim((string) ($_POST['ai_api_key'] ?? ''));
+        $data = [
+            'ai_provider' => in_array($_POST['ai_provider'] ?? '', ['gemini', 'openrouter'], true) ? $_POST['ai_provider'] : 'gemini',
+            'ai_model' => trim((string) ($_POST['ai_model'] ?? '')) ?: null,
+        ];
+        if ($newKey !== '') {
+            $data['ai_api_key'] = Crypto::encrypt($newKey);
+        }
+        if (!empty($_POST['remove_ai_key'])) {
+            $data['ai_api_key'] = null;
+        }
+        Settings::setMany($data);
+        header('Location: admin_settings.php?saved=1#ai');
+        exit;
+    }
+
     if ($section === 'test_email') {
         $testTo = trim((string) ($_POST['test_email'] ?? ''));
         try {
@@ -224,5 +241,32 @@ require __DIR__ . '/partials_header.php';
         <button type="submit" class="btn secondary" style="margin-top:14px;"><?= t('admin.smtp_send_test') ?></button>
     </form>
 </div>
+
+<h2 id="ai" style="font-size:16px;"><?= t('admin.settings_ai_h2') ?></h2>
+<form method="post" class="card" style="max-width:600px;">
+    <?= Csrf::field() ?>
+    <input type="hidden" name="section" value="ai">
+
+    <label><?= t('admin.ai_provider_label') ?></label>
+    <?php $currentProvider = Settings::get('ai_provider', 'gemini'); ?>
+    <select name="ai_provider">
+        <option value="gemini" <?= $currentProvider === 'gemini' ? 'selected' : '' ?>>Google Gemini (AI Studio)</option>
+        <option value="openrouter" <?= $currentProvider === 'openrouter' ? 'selected' : '' ?>>OpenRouter (نماذج مجانية متعددة)</option>
+    </select>
+
+    <label><?= t('admin.ai_api_key_label') ?></label>
+    <input type="password" name="ai_api_key" placeholder="<?= Settings::get('ai_api_key') ? t('admin.ai_key_saved_placeholder') : '' ?>">
+    <?php if (Settings::get('ai_api_key')): ?>
+        <label style="display:inline-flex;align-items:center;gap:6px;font-weight:normal;margin-top:6px;">
+            <input type="checkbox" name="remove_ai_key" value="1" style="width:auto;"> <?= t('admin.ai_remove_key') ?>
+        </label>
+    <?php endif; ?>
+
+    <label><?= t('admin.ai_model_label') ?></label>
+    <input type="text" name="ai_model" value="<?= htmlspecialchars((string) Settings::get('ai_model')) ?>" placeholder="gemini-2.0-flash" dir="ltr">
+    <p class="muted" style="font-size:13px;margin:6px 0 0;"><?= t('admin.ai_settings_hint') ?></p>
+
+    <p><button type="submit" class="btn" style="margin-top:20px;"><?= t('common.save') ?></button></p>
+</form>
 
 <?php require __DIR__ . '/partials_footer.php'; ?>

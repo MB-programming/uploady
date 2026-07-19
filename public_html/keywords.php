@@ -12,7 +12,7 @@ $clientIp = (string) ($_SERVER['REMOTE_ADDR'] ?? '');
 $errors = [];
 $results = null;       // [keyword => demand score 1-100]
 $competition = [];     // [keyword => total competing videos] (YouTube only)
-$seed = '';
+$seed = trim((string) ($_GET['seed'] ?? '')); // prefill support (e.g. from the AI chat's competition link)
 $platform = 'youtube';
 $limitAlert = null;    // 'register' (guest exhausted) | 'upgrade' (plan quota exhausted)
 
